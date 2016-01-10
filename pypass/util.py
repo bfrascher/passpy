@@ -23,9 +23,16 @@ def trap(path_index):
     """Decorator to prevent any function from accessing paths outside of
         ``store_dir``.
 
+    `path_index` is necessary as the functions that need to be trapped
+    have different argument lists.  This way we can indicate which
+    argument contains the paths that are to be checked.
+
     :param path_index: The index for the path variable in either
         `args` or `kwargs`.
     :type path_index: int or str
+
+    :rtype: func
+    :returns: The trapped function.
 
     """
     def trap_decorator(func):

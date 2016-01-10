@@ -233,14 +233,14 @@ class Store():
                                 .format(path))
 
     @trap(1)
-    def set_key(self, path, key_data, overwrite=False):
+    def set_key(self, path, key_data, force=False):
         """Add a key to the store or update an existing one.
 
         :param str path: The key to write.
 
         :param str key_data: The data of the key.
 
-        :param bool overwrite: (optional) If `True` path will be
+        :param bool foce: (optional) If `True` path will be
             overwritten if it exists.  Default: `False`.
 
         :raises: :exc:`FileExistsError` if a key already exists for
@@ -252,7 +252,7 @@ class Store():
 
         key_path = os.path.join(self.store_dir, path + '.gpg')
         key_dir = _get_parent_dir(path)
-        if os.path.exists(key_path) and not overwrite:
+        if os.path.exists(key_path) and not force:
             raise FileExistsError('An entry already exists for {}.'
                                   .format(path))
 

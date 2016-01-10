@@ -340,5 +340,10 @@ class Store():
         return password
 
     @trap(1)
+    @trap(2)
+    def copy_move_key(self, old_path, new_path, move=True, force=False):
+        pass
+
+    @trap(1)
     def list_dir(self, path):
         pass

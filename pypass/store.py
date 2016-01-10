@@ -233,8 +233,8 @@ class Store():
                                 .format(path))
 
     @trap(1)
-    def write_key(self, path, key_data, overwrite=False):
-        """Add a key to the store or edit an existing one.
+    def set_key(self, path, key_data, overwrite=False):
+        """Add a key to the store or update an existing one.
 
         :param str path: The key to write.
 

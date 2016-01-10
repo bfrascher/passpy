@@ -341,8 +341,96 @@ class Store():
 
     @trap(1)
     @trap(2)
-    def copy_move_key(self, old_path, new_path, move=True, force=False):
+    def _copy_move_key(self, old_path, new_path, force=False, move=True):
+        """Copies or moves a key or folder within the password store.
+
+        :param str old_path: The current path of the key or folder.
+
+        :param str new_path: The new path of the key or folder.  If
+            `new_path` ends in a trailing '/' it will always be
+            treated as a folder.
+
+        :param bool force: If `True` any existing key or folder at
+            `new_path` will be overwritten.
+
+        :param bool move: If `True` the key or folder will be moved.
+            If `False` the key or folder will be copied instead.
+
+        """
+        old_path_full = os.path.join(self.store_dir, old_path)
+        new_path_full = os.path.join(self.store_dir, new_path)
+
+        old_dir = _get_parent_dir(old_path_full)
+        new_dir = _get_parent_dir(new_path_full)
+
+        if not os.path.isdir(old_path_full):
+            old_path_full += '.gpg'
+            if not os.path.isfile(old_path_full):
+                raise FileNotFoundError('{} is not in the password store.'
+                                        .format(old_path))
+
+        os.makedirs(new_dir, exist_ok=True)
+        if not (os.path.isdir(old_path_full) or os.path.isdir(new_path_full)
+                or new_path_full.endswith('/')):
+            new_path_full += '.gpg'
+
+        if move:
+            if os.path.exists(new_path_full) and not force:
+                raise FileExistsError('{} is already in the password store.'
+                                      .format(new_path))
+            shutil.move(old_path_full, new_path_full)
+            if os.path.isfile(new_path_full):
+                _reencrypt_path(new_path_full, gpg_bin=self.gpg_bin,
+                                gpg_opts=self.gpg_opts)
+
+            if not os.path.exists(old_path_full):
+                _git_remove_path(self.repo, old_path_full, '', recursive=True,
+                                 commit=False)
+                _git_add_file(self.repo, new_path_full, 'Rename {} to {}.'
+                              .format(old_path, new_path))
+            shutil.rmtree(old_dir, ignore_errors=True)
+        else:
+            #############################################################
+            # if not old_path_full.endswith('.gpg'):                    #
+            #     if old_path_full.endswith('/'):                       #
+            #         old_path_full = old_path_full[:-1]                #
+            #     new_path_full = os.path.join(new_path_full,           #
+            #                                  old_path.split('/')[-1]) #
+            #     shutil.copytree(old_path_full, new_path_full)         #
+            # else:                                                     #
+            #############################################################
+            pass
+
+    def copy_key(self, old_path, new_path, force=False):
+        """Copies a key or folder within the password store.
+
+        :param str old_path: The current path of the key or folder.
+
+        :param str new_path: The new path of the key or folder.  If
+            `new_path` ends in a trailing '/' it will always be
+            treated as a folder.
+
+        :param bool force: If `True` any existing key or folder at
+            `new_path` will be overwritten.
+
+        """
+        # self._copy_move_key(old_path, new_path, force, False)
         pass
+
+    def move_key(self, old_path, new_path, force=False):
+        """Moves a key or folder within the password store.
+
+        :param str old_path: The current path of the key or folder.
+
+        :param str new_path: The new path of the key or folder.  If
+            `new_path` ends in a trailing '/' it will always be
+            treated as a folder.
+
+        :param bool force: If `True` any existing key or folder at
+            `new_path` will be overwritten.
+
+        """
+        self._copy_move_key(old_path, new_path, force, True)
 
     @trap(1)
     def list_dir(self, path):

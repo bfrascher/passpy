@@ -34,7 +34,8 @@ from pypass.gpg import (
 
 from pypass.util import (
     trap,
-    _get_parent_dir
+    _get_parent_dir,
+    _gen_password
 )
 
 
@@ -292,8 +293,51 @@ class Store():
                              recursive=recursive)
 
     @trap(1)
-    def gen_key(self, path):
-        pass
+    def gen_key(self, path, length, symbols=True, force=False,
+                inplace=False):
+        """Generate a new password for a key.
+
+        :param str path: The path of the key.
+
+        :param int length: The length of the new password.
+
+        :param bool symbols: (optional) If `True` non alphanumeric
+            characters will also be used in the new password. Default:
+            `True`.
+
+        :param bool force: (optional) If `True` an existing key at
+            `path` will be overwritten. Default: `False`.
+
+        :param bool inplace: (optional) If `True` only the first line
+            of an existing key at `path` will be overwritten with the
+            new password.
+
+        """
+        key_path = os.path.join(self.store_dir, path + '.gpg')
+        key_dir = _get_parent_dir(path)
+        if os.path.exists(key_path) and not (force or inplace):
+            raise FileExistsError('An entry already exists for {}.'
+                                  .format(path))
+
+        os.makedirs(os.path.join(self.store_dir, key_dir), exist_ok=True)
+
+        password = _gen_password(length, symbols=symbols)
+        action = 'Add'
+        if not inplace:
+            _write_key(key_path, password, self.gpg_bin, self.gpg_opts)
+            action = 'Add'
+        else:
+            action = 'Replace'
+            key_data = _read_key(key_path, gpg_bin=self.gpg_bin,
+                                 gpg_opts=self.gpg_opts)
+            lines = key_data.split(b'\n')
+            lines[0] = password
+            _write_key(key_path, b'\n'.join(lines), gpg_bin=self.gpg_bin,
+                       gpg_opts=self.gpg_opts)
+
+        _git_add_file(self.repo, key_path,
+                      '{} generated password for {}.'.format(action, path))
+        return password
 
     @trap(1)
     def list_dir(self, path):

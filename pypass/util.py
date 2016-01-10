@@ -123,4 +123,4 @@ def _gen_password(length, symbols=True):
     if symbols:
         chars += string.punctuation
 
-    return ''.join(rand.choice(chars) for _ in range(length))
+    return bytes(''.join(rand.choice(chars) for _ in range(length)), 'utf')

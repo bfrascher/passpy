@@ -14,7 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import random
 import re
+import string
 
 from functools import wraps
 
@@ -95,3 +97,30 @@ def _contains_sneaky_path(paths):
         if regex.search(path) is not None:
             return True
     return False
+
+
+def _gen_password(length, symbols=True):
+    """Generates a random string.
+
+    Uses :cls:`random.SystemRandom` if available and
+    :cls:`random.Random` otherwise.
+
+    :param int length: The length of the random string.
+
+    :param bool symbols: (optional) If `True` `string.punctuation`
+        will also be used to generate the output. Default: `True`.
+
+    :rtype: str
+    :returns: A random string of length `length`.
+
+    """
+    try:
+        rand = random.SystemRandom()
+    except NotImplementedError:
+        rand = random.Random()
+
+    chars = string.ascii_letters + string.digits
+    if symbols:
+        chars += string.punctuation
+
+    return ''.join(rand.choice(chars) for _ in range(length))

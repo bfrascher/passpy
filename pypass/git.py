@@ -58,7 +58,7 @@ def _git_commit(repo, msg):
     repo.index.commit(msg)
 
 
-def _git_add_file(repo, path, msg):
+def _git_add_file(repo, path, msg, commit=True):
     """Add a file or folder to the git repository and commit.
 
     :param repo: The git repository.  If None the function will
@@ -70,6 +70,9 @@ def _git_add_file(repo, path, msg):
 
     :param str msg: The commit message.
 
+    :param bool commit: (optional) If `True` the added file will also
+        be commited. Default: `True`.
+
     :raises: ``OSError`` if something went wrong with adding the
         files.
 
@@ -77,10 +80,11 @@ def _git_add_file(repo, path, msg):
     if repo is None:
         return
     repo.index.add([path])
-    _git_commit(repo, msg)
+    if commit:
+        _git_commit(repo, msg)
 
 
-def _git_remove_path(repo, path, msg, recursive=False):
+def _git_remove_path(repo, path, msg, recursive=False, commit=True):
     """Remove the file or folder at path from the repository and commit.
 
     :param repo: The git repository.  If None the function will
@@ -98,7 +102,8 @@ def _git_remove_path(repo, path, msg, recursive=False):
     if repo is None:
         return
     repo.index.remove([path], r=recursive)
-    _git_commit(repo, msg)
+    if commit:
+        _git_commit(repo, msg)
 
 
 def _git_init(path):

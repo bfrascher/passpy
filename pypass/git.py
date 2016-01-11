@@ -65,8 +65,9 @@ def _git_add_file(repo, path, msg, commit=True):
         silently fail.
     :type repo: :cls:``git.Repo``
 
-    :param str path: The path of the file to commit relative to
-        ``store_dir``.
+    :param path: The path of the file to commit relative
+        to ``store_dir``.
+    :type path: str or list
 
     :param str msg: The commit message.
 
@@ -79,7 +80,9 @@ def _git_add_file(repo, path, msg, commit=True):
     """
     if repo is None:
         return
-    repo.index.add([path])
+    if not isinstance(path, list):
+        path = [path]
+    repo.index.add(path)
     if commit:
         _git_commit(repo, msg)
 
@@ -91,7 +94,8 @@ def _git_remove_path(repo, path, msg, recursive=False, commit=True):
         silently fail.
     :type repo: :cls:``git.Repo``
 
-    :param str path: The file or folder to remove.
+    :param path: The file or folder to remove.
+    :type path: str or list
 
     :param str msg: The commit message.
 
@@ -101,7 +105,9 @@ def _git_remove_path(repo, path, msg, recursive=False, commit=True):
     """
     if repo is None:
         return
-    repo.index.remove([path], r=recursive)
+    if not isinstance(path, list):
+        path = [path]
+    repo.index.remove(path, r=recursive)
     if commit:
         _git_commit(repo, msg)
 

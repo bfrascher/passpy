@@ -204,3 +204,5 @@ def _copy_move(src, dst, force=False, move=False):
                     # TODO(benedikt) Find better solution to just quitting.
                     raise FileExistsError('{} already exists.'.format(dstfile))
                 operation(srcfile, dstfile)
+
+    return dst

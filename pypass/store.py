@@ -293,7 +293,7 @@ class Store():
                                         .format(path))
             os.remove(key_path)
 
-        if not os.exists(key_path):
+        if not os.path.exists(key_path):
             _git_remove_path(self.repo, [key_path],
                              'Remove {} from store.'.format(path),
                              recursive=recursive)
@@ -368,7 +368,7 @@ class Store():
         old_path_full = os.path.join(self.store_dir, old_path)
         new_path_full = os.path.join(self.store_dir, new_path)
 
-        _copy_move(old_path_full, new_path_full, force, move)
+        new_path_full = _copy_move(old_path_full, new_path_full, force, move)
 
         if os.path.exists(new_path_full):
             _reencrypt_path(new_path_full, gpg_bin=self.gpg_bin,
@@ -378,13 +378,12 @@ class Store():
         if move:
             action = 'Rename'
             if not os.path.exists(old_path_full):
-                _git_remove_path(self.repo, old_path_full, '', recursive=True,
-                                 commit=False)
+                _git_remove_path(self.repo, old_path_full, '',
+                                 recursive=True, commit=False)
             shutil.rmtree(old_path_full, ignore_errors=True)
 
         _git_add_file(self.repo, new_path_full, '{} {} to {}.'
-                      .format(action, old_path, new_path),
-                      recursive=True)
+                      .format(action, old_path, new_path))
 
 
     def copy_path(self, old_path, new_path, force=False):

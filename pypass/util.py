@@ -46,10 +46,10 @@ def trap(path_index):
                 if path_index in kwargs:
                     path_list = kwargs[path_index]
                 else:
-                    path_list = [None]
+                    path_list = None
             else:
                 path_list = args[path_index]
-            if not isinstance(path_list, list):
+            if path_list is not None and not isinstance(path_list, list):
                 path_list = [path_list]
             if _contains_sneaky_path(path_list):
                 raise PermissionError('Sneaky!')
@@ -109,6 +109,8 @@ def _contains_sneaky_path(paths):
         return False
     regex = re.compile(r'(^|/)\.\.($|/)')
     for path in paths:
+        if path is None:
+            continue
         if regex.search(path) is not None:
             return True
     return False

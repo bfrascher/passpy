@@ -185,10 +185,8 @@ class Store():
         else:
             os.makedirs(gpg_id_dir)
             with open(gpg_id_path, 'w') as gpg_id_file:
-                for gpg_id in gpg_ids:
-                    if not gpg_id.endswith('\n'):
-                        gpg_id += '\n'
-                    gpg_id_file.write(gpg_id)
+                gpg_id_file.write('\n'.join(gpg_ids))
+                gpg_id_file.write('\n')
             _git_add_file(self.repo, gpg_id_path, 'Set GPG id to {}.'
                           .format(', '.join(gpg_ids)))
 

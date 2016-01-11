@@ -381,7 +381,7 @@ class Store():
                       recursive=True)
 
 
-    def copy_key(self, old_path, new_path, force=False):
+    def copy_path(self, old_path, new_path, force=False):
         """Copies a key or folder within the password store.
 
         :param str old_path: The current path of the key or folder.
@@ -394,9 +394,9 @@ class Store():
             `new_path` will be overwritten.
 
         """
-        self._copy_move_key(old_path, new_path, force, False)
+        self._copy_move_path(old_path, new_path, force, False)
 
-    def move_key(self, old_path, new_path, force=False):
+    def move_path(self, old_path, new_path, force=False):
         """Moves a key or folder within the password store.
 
         :param str old_path: The current path of the key or folder.
@@ -409,7 +409,7 @@ class Store():
             `new_path` will be overwritten.
 
         """
-        self._copy_move_key(old_path, new_path, force, True)
+        self._copy_move_path(old_path, new_path, force, True)
 
     @trap(1)
     def list_dir(self, path):

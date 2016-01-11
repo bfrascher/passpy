@@ -185,13 +185,16 @@ class Store():
         else:
             os.makedirs(gpg_id_dir)
             with open(gpg_id_path, 'w') as gpg_id_file:
-                gpg_id_file.writelines(gpg_ids)
-            _git_add_file(self.repo, gpg_id_file, 'Set GPG id to {}.'
+                for gpg_id in gpg_ids:
+                    if not gpg_id.endswith('\n'):
+                        gpg_id += '\n'
+                    gpg_id_file.write(gpg_id)
+            _git_add_file(self.repo, gpg_id_path, 'Set GPG id to {}.'
                           .format(', '.join(gpg_ids)))
 
         _reencrypt_path(gpg_id_dir, gpg_bin=self.gpg_bin,
                         gpg_opts=self.gpg_opts)
-        _git_add_file(self.repo, gpg_id_path,
+        _git_add_file(self.repo, gpg_id_dir,
                       'Reencrypt password store using new GPG id {}.'
                       .format(', '.join(gpg_ids)))
 
@@ -203,7 +206,11 @@ class Store():
         if self.repo is not None:
             return
         self.repo = _git_init(self.store_dir)
-        _git_add_file(self.repo, os.path.join(self.store_dir, '*'),
+        # We can't just add the whole store, as the wrapper then also
+        # adds all files inside the .git directory.
+        entries = [entry for entry in os.listdir(self.store_dir) if
+                   entry != '.git']
+        _git_add_file(self.repo, entries,
                       'Add current contents of password store.')
         attributes_path = os.path.join(self.store_dir, '.gitattributes')
         with open(attributes_path, 'w') as attributes_file:

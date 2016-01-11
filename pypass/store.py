@@ -41,14 +41,19 @@ from pypass.util import (
 
 
 class StoreEntry():
-    """Represents a folder or file in the password store.
+    """Represents a directory or file in the password store.
     """
     def __init__(self, name, path, is_key):
         """Creates a new StoreEntry object.
 
-        :param str name: Name of the folder or file.
-        :param str path: The path to the file or folder relative to `store_dir`.
-        :param bool is_key: Indicates, whether the entry is a key or a folder.
+        :param str name: Name of the directory or file.
+
+        :param str path: The path to the file or directory relative to
+            `store_dir`.
+
+        :param bool is_key: Indicates, whether the entry is a key or a
+            directory.
+
         """
         self.name = name
         self.path = path
@@ -113,7 +118,7 @@ class Store():
 
     def __iter__(self):
         for root, dirs, keys in os.walk(self.store_dir):
-            # Ensure we walk through the folders and keys in
+            # Ensure we walk through the directories and keys in
             # lexicographic order.
             dirs.sort()
             keys.sort()
@@ -128,15 +133,15 @@ class Store():
 
     @trap('path')
     def init_store(self, gpg_ids, path=None):
-        """Initialise the password store or a subfolder with the gpg ids.
+        """Initialise the password store or a subdirectory with the gpg ids.
 
         :param list gpg_ids: The list of gpg ids to encrypt the
             password store with.  If the list is empty, the current
-            gpg id will be removed from the folder in path or root, if
-            path is None.
+            gpg id will be removed from the directory in path or root,
+            if path is None.
 
         :param str path: (optional) If given, the gpg ids will only be
-            set for the given folder.  The path is relative to
+            set for the given directory.  The path is relative to
             ``store_dir``.
 
         :raises: A :exc:`ValueError` if the there is a problem with
@@ -172,8 +177,8 @@ class Store():
             _git_remove_path(self.repo, [gpg_id_path],
                              'Deinitialize {}.'.format(gpg_id_path),
                              recursive=True)
-            # The password store should not contain any empty folders,
-            # so we try to remove as many folders as we can.  Any
+            # The password store should not contain any empty directories,
+            # so we try to remove as many directories as we can.  Any
             # nonempty ones will throw an error and will not be
             # removed.
             shutil.rmtree(gpg_id_dir, ignore_errors=True)
@@ -212,12 +217,12 @@ class Store():
     def get_key(self, path):
         """Reads the data of the key at path.
 
-        :param str path: The path to the key (without '.gpg'
-            ending) relative to ``store_dir``.
+        :param str path: The path to the key (without '.gpg' ending)
+            relative to ``store_dir``.
 
         :rtype: str
-        :returns: The key data as a string or None, if the key
-            does not exist.
+        :returns: The key data as a string or None, if the key does
+            not exist.
 
         :raises: :exc:`FileNotFoundError` if path is not a file.
 
@@ -266,10 +271,10 @@ class Store():
 
     @trap(1)
     def remove_path(self, path, recursive=False):
-        """Removes the given key or folder from the store.
+        """Removes the given key or directory from the store.
 
-        :param str path: The key or folder to remove.  Use `None` or
-            '' to delete the whole store.
+        :param str path: The key or directory to remove.  Use `None`
+            or '' to delete the whole store.
 
         :param bool recursive: (optional) Set to `True` if nonempty
             directories should be removed.
@@ -344,19 +349,20 @@ class Store():
     @trap(2)
     def _copy_move_path(self, old_path, new_path, force=False,
                         move=False):
-        """Copies or moves a key or folder within the password store.
+        """Copies or moves a key or directory within the password store.
 
-        :param str old_path: The current path of the key or folder.
+        :param str old_path: The current path of the key or directory.
 
-        :param str new_path: The new path of the key or folder.  If
+        :param str new_path: The new path of the key or directory.  If
             `new_path` ends in a trailing '/' it will always be
-            treated as a folder.
+            treated as a directory.
 
-        :param bool force: If `True` any existing key or folder at
+        :param bool force: If `True` any existing key or directory at
             `new_path` will be overwritten.
 
-        :param bool move: If `True` the key or folder will be moved.
-            If `False` the key or folder will be copied instead.
+        :param bool move: If `True` the key or directory will be
+            moved.  If `False` the key or directory will be copied
+            instead.
 
         """
         old_path_full = os.path.join(self.store_dir, old_path)
@@ -382,30 +388,30 @@ class Store():
 
 
     def copy_path(self, old_path, new_path, force=False):
-        """Copies a key or folder within the password store.
+        """Copies a key or directory within the password store.
 
-        :param str old_path: The current path of the key or folder.
+        :param str old_path: The current path of the key or directory.
 
-        :param str new_path: The new path of the key or folder.  If
+        :param str new_path: The new path of the key or directory.  If
             `new_path` ends in a trailing '/' it will always be
-            treated as a folder.
+            treated as a directory.
 
-        :param bool force: If `True` any existing key or folder at
+        :param bool force: If `True` any existing key or directory at
             `new_path` will be overwritten.
 
         """
         self._copy_move_path(old_path, new_path, force, False)
 
     def move_path(self, old_path, new_path, force=False):
-        """Moves a key or folder within the password store.
+        """Moves a key or directory within the password store.
 
-        :param str old_path: The current path of the key or folder.
+        :param str old_path: The current path of the key or directory.
 
-        :param str new_path: The new path of the key or folder.  If
+        :param str new_path: The new path of the key or directory.  If
             `new_path` ends in a trailing '/' it will always be
-            treated as a folder.
+            treated as a directory.
 
-        :param bool force: If `True` any existing key or folder at
+        :param bool force: If `True` any existing key or directory at
             `new_path` will be overwritten.
 
         """

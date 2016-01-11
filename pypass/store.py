@@ -164,8 +164,8 @@ class Store():
         else:
             path = self.store_dir
 
-        gpg_id_dir = os.join(self.store_dir, path)
-        gpg_id_path = os.join(gpg_id_dir, '.gpg-id')
+        gpg_id_dir = os.path.join(self.store_dir, path)
+        gpg_id_path = os.path.join(gpg_id_dir, '.gpg-id')
 
         # Delete current gpg id.
         if gpg_ids is None or len(gpg_ids) == 0:
@@ -189,7 +189,8 @@ class Store():
             _git_add_file(self.repo, gpg_id_file, 'Set GPG id to {}.'
                           .format(', '.join(gpg_ids)))
 
-        _reencrypt_path(gpg_id_dir)
+        _reencrypt_path(gpg_id_dir, gpg_bin=self.gpg_bin,
+                        gpg_opts=self.gpg_opts)
         _git_add_file(self.repo, gpg_id_path,
                       'Reencrypt password store using new GPG id {}.'
                       .format(', '.join(gpg_ids)))
@@ -202,10 +203,10 @@ class Store():
         if self.repo is not None:
             return
         self.repo = _git_init(self.store_dir)
-        _git_add_file(self.repo, self.store_dir,
+        _git_add_file(self.repo, os.path.join(self.store_dir, '*'),
                       'Add current contents of password store.')
         attributes_path = os.path.join(self.store_dir, '.gitattributes')
-        with open(attributes_path) as attributes_file:
+        with open(attributes_path, 'w') as attributes_file:
             attributes_file.write('*.gpg diff=gpg')
         _git_add_file(self.repo, attributes_path,
                       'Configure git repository for gpg file diff.')

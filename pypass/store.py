@@ -212,7 +212,7 @@ class Store():
                       'Add current contents of password store.')
         attributes_path = os.path.join(self.store_dir, '.gitattributes')
         with open(attributes_path, 'w') as attributes_file:
-            attributes_file.write('*.gpg diff=gpg')
+            attributes_file.write('*.gpg diff=gpg\n')
         _git_add_file(self.repo, attributes_path,
                       'Configure git repository for gpg file diff.')
         _git_config(self.repo, '--local', 'diff.gpg.binary', 'true')

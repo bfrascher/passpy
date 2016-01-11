@@ -35,7 +35,8 @@ from pypass.gpg import (
 from pypass.util import (
     trap,
     _get_parent_dir,
-    _gen_password
+    _gen_password,
+    _copy_move
 )
 
 
@@ -341,7 +342,8 @@ class Store():
 
     @trap(1)
     @trap(2)
-    def _copy_move_key(self, old_path, new_path, force=False, move=True):
+    def _copy_move_path(self, old_path, new_path, force=False,
+                        move=False):
         """Copies or moves a key or folder within the password store.
 
         :param str old_path: The current path of the key or folder.
@@ -360,46 +362,24 @@ class Store():
         old_path_full = os.path.join(self.store_dir, old_path)
         new_path_full = os.path.join(self.store_dir, new_path)
 
-        old_dir = _get_parent_dir(old_path_full)
-        new_dir = _get_parent_dir(new_path_full)
+        _copy_move(old_path_full, new_path_full, force, move)
 
-        if not os.path.isdir(old_path_full):
-            old_path_full += '.gpg'
-            if not os.path.isfile(old_path_full):
-                raise FileNotFoundError('{} is not in the password store.'
-                                        .format(old_path))
+        if os.path.exists(new_path_full):
+            _reencrypt_path(new_path_full, gpg_bin=self.gpg_bin,
+                            gpg_opts=self.gpg_opts)
 
-        os.makedirs(new_dir, exist_ok=True)
-        if not (os.path.isdir(old_path_full) or os.path.isdir(new_path_full)
-                or new_path_full.endswith('/')):
-            new_path_full += '.gpg'
-
+        action = 'Copy'
         if move:
-            if os.path.exists(new_path_full) and not force:
-                raise FileExistsError('{} is already in the password store.'
-                                      .format(new_path))
-            shutil.move(old_path_full, new_path_full)
-            if os.path.isfile(new_path_full):
-                _reencrypt_path(new_path_full, gpg_bin=self.gpg_bin,
-                                gpg_opts=self.gpg_opts)
-
+            action = 'Rename'
             if not os.path.exists(old_path_full):
                 _git_remove_path(self.repo, old_path_full, '', recursive=True,
                                  commit=False)
-                _git_add_file(self.repo, new_path_full, 'Rename {} to {}.'
-                              .format(old_path, new_path))
-            shutil.rmtree(old_dir, ignore_errors=True)
-        else:
-            #############################################################
-            # if not old_path_full.endswith('.gpg'):                    #
-            #     if old_path_full.endswith('/'):                       #
-            #         old_path_full = old_path_full[:-1]                #
-            #     new_path_full = os.path.join(new_path_full,           #
-            #                                  old_path.split('/')[-1]) #
-            #     shutil.copytree(old_path_full, new_path_full)         #
-            # else:                                                     #
-            #############################################################
-            pass
+            shutil.rmtree(old_path_full, ignore_errors=True)
+
+        _git_add_file(self.repo, new_path_full, '{} {} to {}.'
+                      .format(action, old_path, new_path),
+                      recursive=True)
+
 
     def copy_key(self, old_path, new_path, force=False):
         """Copies a key or folder within the password store.
@@ -414,8 +394,7 @@ class Store():
             `new_path` will be overwritten.
 
         """
-        # self._copy_move_key(old_path, new_path, force, False)
-        pass
+        self._copy_move_key(old_path, new_path, force, False)
 
     def move_key(self, old_path, new_path, force=False):
         """Moves a key or folder within the password store.

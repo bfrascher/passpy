@@ -14,8 +14,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import os
 import random
 import re
+import shutil
 import string
 
 from functools import wraps
@@ -67,6 +69,19 @@ def _get_parent_dir(path):
     if path is None:
         return None
     return '/'.join(path.split('/')[:-1])
+
+
+def _get_name(path):
+    """Returns the name of the file or directory at path.
+
+    :param str path: The file or directory to get the name of.
+
+    :rtype: str
+    :returns: The name of the file or directory.  Can be None.
+    """
+    if path is None:
+        return None
+    return path.split('/')[-1]
 
 
 # TODO(benedikt) Check that this covers all the cases of the original function.
@@ -124,3 +139,68 @@ def _gen_password(length, symbols=True):
         chars += string.punctuation
 
     return bytes(''.join(rand.choice(chars) for _ in range(length)), 'utf')
+
+
+def _copy_move(src, dst, force=False, move=False):
+    """Copies/moves a file or directory recursively.
+
+    This function is partially based on the `cp` function from the
+    pycoreutils package written by Hans van Leeuwen and licensed under
+    the MIT license (https://pypi.python.org/pypi/pycoreutils/).
+
+    :param str src: The file or directory to be copied.
+
+    :param str dst: The file or directory to be copied to.
+
+    :param bool force: If `True` existing files at the destination
+        will be silently overwritten.
+
+    :raises: :exc:`FileNotFoundError` if there exists no key or
+        directory for `src`.
+
+    :raises: :exc:`FileExistsError` if a key at `dst` already exists
+        and `force` is set to `False`.
+
+    """
+    if move:
+        operation = shutil.move
+    else:
+        operation = shutil.copy
+
+    if not os.path.isdir(src):
+        src += '.gpg'
+        if not os.path.isfile(src):
+            raise FileNotFoundError('{} not found.'.format(src))
+
+        if dst.endswith('/') and not os.path.exists(dst):
+            os.makedirs(dst, exist_ok=True)
+        if os.path.isdir(dst):
+            dst = os.path.join(dst, _get_name(src))
+        else:
+            dst += '.gpg'
+
+        if os.path.exists(dst) and not force:
+            raise FileExistsError('{} already exists.'.format(dst))
+        operation(src, dst)
+    else:
+        if dst.startswith(src):
+            raise IOError('Can\'t copy a directory into itself.')
+
+        if not os.path.exists(dst):
+            os.makedirs(dst, exist_ok=True)
+
+        for root, dirs, files in os.walk(src):
+            mid = root.replace(src, '', 1)
+
+            for d in dirs:
+                dstdir = os.path.join(dst, mid, d)
+                if not os.path.exists(dstdir):
+                    os.mkdir(dstdir)
+
+            for f in files:
+                srcfile = os.path.join(root, f)
+                dstfile = os.path.join(dst, mid, f)
+                if os.path.exists(dstfile) and not force:
+                    # TODO(benedikt) Find better solution to just quitting.
+                    raise FileExistsError('{} already exists.'.format(dstfile))
+                operation(srcfile, dstfile)

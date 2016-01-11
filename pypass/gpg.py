@@ -97,7 +97,7 @@ def _reencrypt_path(path, gpg_bin, gpg_opts):
     gpg = GPG(gpgbinary=gpg_bin, options=gpg_opts)
     if os.path.isfile(path):
         gpg_recipients = _get_gpg_recipients(path)
-        _reencrypt_key(path, gpg)
+        _reencrypt_key(path, gpg, gpg_recipients)
     elif os.path.isdir(path):
         for root, dirs, keys in os.walk(path):
             gpg_recipients = _get_gpg_recipients(root)

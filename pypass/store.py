@@ -19,7 +19,6 @@ import os
 import shutil
 
 from pypass.git import (
-    _git_list_dir,
     _get_git_repository,
     _git_add_path,
     _git_remove_path,
@@ -210,10 +209,7 @@ class Store():
         if self.repo is not None:
             return
         self.repo = _git_init(self.store_dir)
-        # We can't just add the whole store, as the wrapper then also
-        # adds all files inside the .git directory.
-        entries = _git_list_dir(self.store_dir)
-        _git_add_path(self.repo, entries,
+        _git_add_path(self.repo, self.store_dir,
                       'Add current contents of password store.')
         attributes_path = os.path.join(self.store_dir, '.gitattributes')
         with open(attributes_path, 'w') as attributes_file:
@@ -305,7 +301,7 @@ class Store():
             os.remove(key_path)
 
         if not os.path.exists(key_path):
-            _git_remove_path(self.repo, [key_path],
+            _git_remove_path(self.repo, key_path,
                              'Remove {} from store.'.format(path),
                              recursive=recursive)
 
@@ -395,10 +391,6 @@ class Store():
                                  recursive=True, commit=False)
             shutil.rmtree(old_path_full, ignore_errors=True)
 
-        # Prevent adding the .git directory, if new_path_full points
-        # to the root directory of the store.
-        if os.path.abspath(new_path_full) == os.path.abspath(self.store_dir):
-            new_path_full = _git_list_dir(self.store_dir)
         _git_add_path(self.repo, new_path_full, '{} {} to {}.'
                       .format(action, old_path, new_path))
 

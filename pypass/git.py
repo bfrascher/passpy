@@ -82,7 +82,7 @@ def _git_commit(repo, msg):
     repo.index.commit(msg)
 
 
-def _git_add_file(repo, path, msg, commit=True):
+def _git_add_path(repo, path, msg, commit=True):
     """Add a file or folder to the git repository and commit.
 
     :param repo: The git repository.  If None the function will

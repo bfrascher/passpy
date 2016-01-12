@@ -21,7 +21,7 @@ import shutil
 from pypass.git import (
     _git_list_dir,
     _get_git_repository,
-    _git_add_file,
+    _git_add_path,
     _git_remove_path,
     _git_init,
     _git_config
@@ -188,12 +188,12 @@ class Store():
             with open(gpg_id_path, 'w') as gpg_id_file:
                 gpg_id_file.write('\n'.join(gpg_ids))
                 gpg_id_file.write('\n')
-            _git_add_file(self.repo, gpg_id_path, 'Set GPG id to {}.'
+            _git_add_path(self.repo, gpg_id_path, 'Set GPG id to {}.'
                           .format(', '.join(gpg_ids)))
 
         _reencrypt_path(gpg_id_dir, gpg_bin=self.gpg_bin,
                         gpg_opts=self.gpg_opts)
-        _git_add_file(self.repo, gpg_id_dir,
+        _git_add_path(self.repo, gpg_id_dir,
                       'Reencrypt password store using new GPG id {}.'
                       .format(', '.join(gpg_ids)))
 
@@ -208,12 +208,12 @@ class Store():
         # We can't just add the whole store, as the wrapper then also
         # adds all files inside the .git directory.
         entries = _git_list_dir(self.store_dir)
-        _git_add_file(self.repo, entries,
+        _git_add_path(self.repo, entries,
                       'Add current contents of password store.')
         attributes_path = os.path.join(self.store_dir, '.gitattributes')
         with open(attributes_path, 'w') as attributes_file:
             attributes_file.write('*.gpg diff=gpg\n')
-        _git_add_file(self.repo, attributes_path,
+        _git_add_path(self.repo, attributes_path,
                       'Configure git repository for gpg file diff.')
         _git_config(self.repo, '--local', 'diff.gpg.binary', 'true')
         _git_config(self.repo, '--local', 'diff.gpg.textconf',
@@ -272,7 +272,7 @@ class Store():
         os.makedirs(os.path.join(self.store_dir, key_dir), exist_ok=True)
         _write_key(key_path, key_data, self.gpg_bin, self.gpg_opts)
 
-        _git_add_file(self.repo, key_path,
+        _git_add_path(self.repo, key_path,
                       'Add given password for {} to store.'.format(path))
 
     @trap(1)
@@ -349,7 +349,7 @@ class Store():
             _write_key(key_path, b'\n'.join(lines), gpg_bin=self.gpg_bin,
                        gpg_opts=self.gpg_opts)
 
-        _git_add_file(self.repo, key_path,
+        _git_add_path(self.repo, key_path,
                       '{} generated password for {}.'.format(action, path))
         return password
 
@@ -394,7 +394,7 @@ class Store():
         # to the root directory of the store.
         if os.path.abspath(new_path_full) == os.path.abspath(self.store_dir):
             new_path_full = _git_list_dir(self.store_dir)
-        _git_add_file(self.repo, new_path_full, '{} {} to {}.'
+        _git_add_path(self.repo, new_path_full, '{} {} to {}.'
                       .format(action, old_path, new_path))
 
 

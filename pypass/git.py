@@ -83,7 +83,7 @@ def _git_commit(repo, msg):
 
 
 def _git_add_path(repo, path, msg, commit=True):
-    """Add a file or folder to the git repository and commit.
+    """Add a file or directory to the git repository and commit.
 
     :param repo: The git repository.  If None the function will
         silently fail.
@@ -112,19 +112,20 @@ def _git_add_path(repo, path, msg, commit=True):
 
 
 def _git_remove_path(repo, path, msg, recursive=False, commit=True):
-    """Remove the file or folder at path from the repository and commit.
+    """Remove the file or directory at path from the repository and commit.
 
     :param repo: The git repository.  If None the function will
         silently fail.
     :type repo: :cls:``git.Repo``
 
-    :param path: The file or folder to remove.
+    :param path: The file or directory to remove.
     :type path: str or list
 
     :param str msg: The commit message.
 
-    :param bool recursive: (optional) Set to `True` if folders should
-        be removed from the repository recursively.  Default: `False`.
+    :param bool recursive: (optional) Set to `True` if directories
+        should be removed from the repository recursively.  Default:
+        `False`.
 
     """
     if repo is None:

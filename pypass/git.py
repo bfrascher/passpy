@@ -69,17 +69,26 @@ def _get_git_repository(path):
     return repo
 
 
+def _git_reset(repo):
+    """Reset the index to the current commit.
+
+    :param repo: The repository to use
+    :type repo: :cls:``git.Repo``
+    """
+    repo.index.reset()
+
+
 def _git_commit(repo, msg):
     """Commit the current changes.
 
-    :param repo:
+    :param repo: The repository to use.
     :type repo: :cls:``git.Repo``
 
     :param str msg: The commit message.
     """
     if repo is None:
         return
-    repo.index.commit(msg)
+    repo.git.commit(m=msg)
 
 
 def _git_add_path(repo, path, msg, commit=True):
@@ -106,7 +115,7 @@ def _git_add_path(repo, path, msg, commit=True):
         return
     if not isinstance(path, list):
         path = [path]
-    repo.index.add(path)
+    repo.git.add(*path)
     if commit:
         _git_commit(repo, msg)
 
@@ -116,7 +125,7 @@ def _git_remove_path(repo, path, msg, recursive=False, commit=True):
 
     :param repo: The git repository.  If None the function will
         silently fail.
-    :type repo: :cls:``git.Repo``
+    :type repo: :class:`git.Repo`
 
     :param path: The file or directory to remove.
     :type path: str or list
@@ -132,7 +141,7 @@ def _git_remove_path(repo, path, msg, recursive=False, commit=True):
         return
     if not isinstance(path, list):
         path = [path]
-    repo.index.remove(path, r=recursive)
+    repo.git.rm(*path, r=True)
     if commit:
         _git_commit(repo, msg)
 

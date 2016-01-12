@@ -169,30 +169,30 @@ def _copy_move(src, dst, force=False, move=False):
     else:
         operation = shutil.copy
 
-    if not os.path.isdir(src):
-        src += '.gpg'
-        if not os.path.isfile(src):
-            raise FileNotFoundError('{} not found.'.format(src))
-
+    if os.path.isfile(src):
         if dst.endswith('/') and not os.path.exists(dst):
             os.makedirs(dst, exist_ok=True)
+        else:
+            os.makedirs(_get_parent_dir(dst), exist_ok=True)
         if os.path.isdir(dst):
             dst = os.path.join(dst, _get_name(src))
-        else:
-            dst += '.gpg'
 
         if os.path.exists(dst) and not force:
             raise FileExistsError('{} already exists.'.format(dst))
         operation(src, dst)
-    else:
+    elif os.path.isdir(src):
         if dst.startswith(src):
             raise IOError('Can\'t copy a directory into itself.')
 
+        if os.path.exists(dst):
+            dst = os.path.join(dst, _get_name(src))
         if not os.path.exists(dst):
             os.makedirs(dst, exist_ok=True)
 
         for root, dirs, files in os.walk(src):
             mid = root.replace(src, '', 1)
+            if mid.startswith('/'):
+                mid = mid[1:]
 
             for d in dirs:
                 dstdir = os.path.join(dst, mid, d)
@@ -206,5 +206,7 @@ def _copy_move(src, dst, force=False, move=False):
                     # TODO(benedikt) Find better solution to just quitting.
                     raise FileExistsError('{} already exists.'.format(dstfile))
                 operation(srcfile, dstfile)
+    else:
+        raise FileNotFoundError('{} does not exist.'.format(src))
 
     return dst

@@ -14,6 +14,16 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+"""
+##########
+gpg module
+##########
+
+This module includes all calls to the `gnupg wrapper`_.
+
+.. _gnupg wrapper: https://github.com/isislovecruft/python-gnupg
+"""
+
 import os
 
 from gnupg import GPG
@@ -24,10 +34,10 @@ from pypass.util import _get_parent_dir
 def _get_gpg_recipients(path):
     """Get the GPG recipients for the given path.
 
-    :param str path: The folder to get the GPG recipients for.
+    :param str path: The directory to get the GPG recipients for.
 
-    :raises: A :exc:`FileNotFoundError` if there is not valid .gpg-id
-        file for path.
+    :raises FileNotFoundError: if there is not valid .gpg-id file for
+        path.
 
     :rtype: list
     :returns: The list of IDs of the GPG recipients for the given
@@ -50,12 +60,33 @@ def _get_gpg_recipients(path):
 
 
 def _read_key(path, gpg_bin, gpg_opts):
+    """Read and decrypt a single key file.
+
+    :param str path: The path to the key to decrypt.
+
+    :param str gpg_bin: The path to the gpg binary.
+
+    :param list gpg_opts: The options for gpg.
+
+    :rtype: str
+    :returns: The unencrypted content of the file at `path`.
+
+    """
     gpg = GPG(gpgbinary=gpg_bin, options=gpg_opts)
     with open(path, 'rb') as key_file:
         return gpg.decrypt_file(key_file).data
 
 
 def _write_key(path, key_data, gpg_bin, gpg_opts):
+    """Encrypt and write a single key file.
+
+    :param str path: The path to the key to decrypt.
+
+    :param str gpg_bin: The path to the gpg binary.
+
+    :param list gpg_opts: The options for gpg.
+
+    """
     gpg = GPG(gpgbinary=gpg_bin, options=gpg_opts)
     gpg_recipients = _get_gpg_recipients(path)
     key_data_enc = gpg.encrypt(key_data, gpg_recipients).data
@@ -64,9 +95,17 @@ def _write_key(path, key_data, gpg_bin, gpg_opts):
 
 
 def _reencrypt_key(path, gpg, gpg_recipients):
-    """Reencrypts the key at path.
+    """Reencrypt a single key.
+
+    Gets called from :func:`pypass.gpg._reencrypt_path`.
 
     :param str path: The path to a gpg encrypted file.
+
+    :param gpg: The gpg object.
+    :type gpg: :class:`gnupg.GPG`
+
+    :param list gpg_recipients: The list of GPG Ids to encrypt the key
+        with.
 
     """
     with open(path, 'rb') as key_file:
@@ -77,19 +116,19 @@ def _reencrypt_key(path, gpg, gpg_recipients):
 
 
 def _reencrypt_path(path, gpg_bin, gpg_opts):
-    """Reencrypts the key or keys at or in path.
+    """Reencrypt a single or multiple keys.
 
-    If path is a folder all keys inside that folder and it's
-    subfolders will be reencrypted.
+    If path is a directory all keys inside that directory and it's
+    subdirectories will be reencrypted.
 
-    :param str path: The key or folder to reencrypt.  If None the
-        function will silently fail.
+    :param str path: The key or directory to reencrypt.  If ``None``
+        the function will silently fail.
 
     :param str gpg_bin: The path to the gpg binary.
 
     :param list gpg_opts: The gpg options.
 
-    :raises: :exc:``FileNotFoundError`` if path does not exist.
+    :raises FileNotFoundError: if path does not exist.
 
     """
     if path is None:

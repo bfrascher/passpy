@@ -13,6 +13,15 @@
 
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+##########
+git module
+##########
+
+This module includes all calls to the `git wrapper`_.
+
+.. _git wrapper: https://github.com/gitpython-developers/GitPython/
+"""
 
 import logging
 
@@ -28,7 +37,7 @@ def _get_git_repository(path):
 
     :param str path: The path of a git repository to return.
 
-    :rtype: :cls:``git.Repo``
+    :rtype: :class:`git.repo.base.Repo`
     :returns: The git repository at path or None if no repository
         exists.
 
@@ -49,7 +58,7 @@ def _git_commit(repo, msg):
     """Commit the current changes.
 
     :param repo: The repository to use.
-    :type repo: :cls:``git.Repo``
+    :type repo: :class:`git.repo.base.Repo`
 
     :param str msg: The commit message.
     """
@@ -61,21 +70,20 @@ def _git_commit(repo, msg):
 def _git_add_path(repo, path, msg, commit=True):
     """Add a file or directory to the git repository and commit.
 
-    :param repo: The git repository.  If None the function will
+    :param repo: The git repository.  If ``None`` the function will
         silently fail.
-    :type repo: :cls:``git.Repo``
+    :type repo: :class:`git.repo.base.Repo`
 
-    :param path: The path of the file to commit relative
-        to ``store_dir``.
+    :param path: The path of the file or directory to commit relative
+        to :py:attr:`pypass.store.Store.store_dir`.
     :type path: str or list
 
     :param str msg: The commit message.
 
-    :param bool commit: (optional) If `True` the added file will also
-        be commited. Default: `True`.
+    :param bool commit: (optional) If ``True`` the added file will also
+        be commited.
 
-    :raises: ``OSError`` if something went wrong with adding the
-        files.
+    :raises OSError: if something went wrong with adding the files.
 
     """
     if repo is None:
@@ -90,18 +98,17 @@ def _git_add_path(repo, path, msg, commit=True):
 def _git_remove_path(repo, path, msg, recursive=False, commit=True):
     """Remove the file or directory at path from the repository and commit.
 
-    :param repo: The git repository.  If None the function will
+    :param repo: The git repository.  If ``None`` the function will
         silently fail.
-    :type repo: :class:`git.Repo`
+    :type repo: :class:`git.repo.base.Repo`
 
     :param path: The file or directory to remove.
     :type path: str or list
 
     :param str msg: The commit message.
 
-    :param bool recursive: (optional) Set to `True` if directories
-        should be removed from the repository recursively.  Default:
-        `False`.
+    :param bool recursive: (optional) Set to ``True`` if directories
+        should be removed from the repository recursively.
 
     """
     if repo is None:

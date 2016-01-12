@@ -292,4 +292,8 @@ texinfo_documents = [
 
 
 # Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'https://docs.python.org/': None}
+intersphinx_mapping = {
+    'git': ('https://gitpython.readthedocs.org/en/stable/', None),
+    'gnupg': ('https://python-gnupg.readthedocs.org/en/latest/', None),
+    'py': ('https://docs.python.org/3/', None)
+}

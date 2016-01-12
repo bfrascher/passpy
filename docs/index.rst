@@ -12,8 +12,8 @@ Contents:
    :maxdepth: 2
 
    introduction
-   reference/index
    tutorial
+   reference
 
 
 

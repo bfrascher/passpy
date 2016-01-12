@@ -14,6 +14,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+"""
+###########
+util module
+###########
+
+"""
+
 import os
 import random
 import re
@@ -24,8 +31,7 @@ from functools import wraps
 
 
 def trap(path_index):
-    """Decorator to prevent any function from accessing paths outside of
-        ``store_dir``.
+    """Prevent accessing files and directories outside the password store.
 
     `path_index` is necessary as the functions that need to be trapped
     have different argument lists.  This way we can indicate which
@@ -64,7 +70,8 @@ def _get_parent_dir(path):
     :param str path: A file or folder.
 
     :rtype: str
-    :returns: The parent folder of path.  Can be None.
+    :returns: The parent folder of path.  Can be ``None``.
+
     """
     if path is None:
         return None
@@ -77,7 +84,8 @@ def _get_name(path):
     :param str path: The file or directory to get the name of.
 
     :rtype: str
-    :returns: The name of the file or directory.  Can be None.
+    :returns: The name of the file or directory.  Can be ``None``.
+
     """
     if path is None:
         return None
@@ -86,17 +94,17 @@ def _get_name(path):
 
 # TODO(benedikt) Check that this covers all the cases of the original function.
 def _contains_sneaky_path(paths):
-    """Check if the user tries to escape from the ``store_dir``.
+    """Check if the user tries to escape from the password store.
 
-    To avoid the user escaping out of the boundaries of `store_dir` we
-    check, if a user given path contains any segment consisting of
-    '..'.
+    To avoid the user escaping out of the boundaries of
+    :attr:`pypass.store.Store.store_dir` we check, if a user given
+    path contains any segment consisting of '..'.
 
     :param list paths: List of paths to check.
 
     :rtype: bool
-    :returns: `True` if any path in paths contains '..' as a segment.
-        `False` otherwise.
+    :returns: ``True`` if any path in paths contains '..' as a
+        segment.  ``False`` otherwise.
 
     """
     # BEGIN OLD CODE ==================================================
@@ -119,13 +127,14 @@ def _contains_sneaky_path(paths):
 def _gen_password(length, symbols=True):
     """Generates a random string.
 
-    Uses :cls:`random.SystemRandom` if available and
-    :cls:`random.Random` otherwise.
+    Uses :class:`random.SystemRandom` if available and
+    :class:`random.Random` otherwise.
 
     :param int length: The length of the random string.
 
-    :param bool symbols: (optional) If `True` `string.punctuation`
-        will also be used to generate the output. Default: `True`.
+    :param bool symbols: (optional) If ``True``
+        :const:`string.punctuation` will also be used to generate the
+        output.
 
     :rtype: str
     :returns: A random string of length `length`.
@@ -147,21 +156,23 @@ def _copy_move(src, dst, force=False, move=False):
     """Copies/moves a file or directory recursively.
 
     This function is partially based on the `cp` function from the
-    pycoreutils package written by Hans van Leeuwen and licensed under
-    the MIT license (https://pypi.python.org/pypi/pycoreutils/).
+    `pycoreutils`_ package written by Hans van Leeuwen and licensed
+    under the MIT license.
+
+    .. _pycoreutils: https://pypi.python.org/pypi/pycoreutils/
 
     :param str src: The file or directory to be copied.
 
     :param str dst: The file or directory to be copied to.
 
-    :param bool force: If `True` existing files at the destination
+    :param bool force: If ``True`` existing files at the destination
         will be silently overwritten.
 
-    :raises: :exc:`FileNotFoundError` if there exists no key or
-        directory for `src`.
+    :raises FileNotFoundError: if there exists no key or directory for
+        `src`.
 
-    :raises: :exc:`FileExistsError` if a key at `dst` already exists
-        and `force` is set to `False`.
+    :raises FileExistsError: if a key at `dst` already exists and
+        `force` is set to ``False``.
 
     """
     if move:

@@ -19,6 +19,7 @@ import os
 import shutil
 
 from pypass.git import (
+    _git_list_dir,
     _get_git_repository,
     _git_add_file,
     _git_remove_path,
@@ -206,8 +207,7 @@ class Store():
         self.repo = _git_init(self.store_dir)
         # We can't just add the whole store, as the wrapper then also
         # adds all files inside the .git directory.
-        entries = [entry for entry in os.listdir(self.store_dir) if
-                   entry != '.git']
+        entries = _git_list_dir(self.store_dir)
         _git_add_file(self.repo, entries,
                       'Add current contents of password store.')
         attributes_path = os.path.join(self.store_dir, '.gitattributes')
@@ -260,7 +260,7 @@ class Store():
             path and overwrite is `False`.
 
         """
-        if path is None:
+        if path is None or path == '':
             return
 
         key_path = os.path.join(self.store_dir, path + '.gpg')
@@ -325,6 +325,8 @@ class Store():
             new password.
 
         """
+        if path is None or path == '':
+            return None
         key_path = os.path.join(self.store_dir, path + '.gpg')
         key_dir = _get_parent_dir(path)
         if os.path.exists(key_path) and not (force or inplace):
@@ -388,6 +390,10 @@ class Store():
                                  recursive=True, commit=False)
             shutil.rmtree(old_path_full, ignore_errors=True)
 
+        # Prevent adding the .git directory, if new_path_full points
+        # to the root directory of the store.
+        if os.path.abspath(new_path_full) == os.path.abspath(self.store_dir):
+            new_path_full = _git_list_dir(self.store_dir)
         _git_add_file(self.repo, new_path_full, '{} {} to {}.'
                       .format(action, old_path, new_path))
 

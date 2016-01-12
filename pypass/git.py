@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import os
 import logging
 
 from git import (
@@ -21,6 +22,29 @@ from git import (
     InvalidGitRepositoryError,
     NoSuchPathError
 )
+
+
+def _git_list_dir(path):
+    """List all non git entries in directory.
+
+    When specifying a directory to GitPython currently all files will
+    be found, even the on .git directories.  To prevent these files
+    from being added this function lists all entries in a directory
+    but ommits any found .git directories.
+
+    :param str path: The directory to list the entries of.
+
+    :rtype: list
+    :returns: A list of entries in `path` or `None` if `path` is not a
+        directory.
+
+    """
+    if path is None:
+        return None
+    if not os.path.isdir(path):
+        return None
+    return [entry for entry in os.listdir(path)
+            if entry != '.git']
 
 
 def _get_git_repository(path):

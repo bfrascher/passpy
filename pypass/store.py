@@ -165,6 +165,11 @@ class Store():
         else:
             path = self.store_dir
 
+        # Ensure that gpg_ids is a list so that the later .join does
+        # not accidentally join single letters of a string.
+        if gpg_ids is not None and not isinstance(gpg_ids, list):
+            gpg_ids = [gpg_ids]
+
         gpg_id_dir = os.path.join(self.store_dir, path)
         gpg_id_path = os.path.join(gpg_id_dir, '.gpg-id')
 

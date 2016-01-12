@@ -377,6 +377,11 @@ class Store():
         old_path_full = os.path.join(self.store_dir, old_path)
         new_path_full = os.path.join(self.store_dir, new_path)
 
+        if not os.path.isdir(old_path_full):
+            old_path_full += '.gpg'
+            if not os.path.isdir(new_path_full) or new_path_full.endswith('/'):
+                new_path_full += '.gpg'
+
         new_path_full = _copy_move(old_path_full, new_path_full, force, move)
 
         if os.path.exists(new_path_full):
@@ -386,10 +391,10 @@ class Store():
         action = 'Copy'
         if move:
             action = 'Rename'
+            shutil.rmtree(old_path_full, ignore_errors=True)
             if not os.path.exists(old_path_full):
                 _git_remove_path(self.repo, old_path_full, '',
                                  recursive=True, commit=False)
-            shutil.rmtree(old_path_full, ignore_errors=True)
 
         _git_add_path(self.repo, new_path_full, '{} {} to {}.'
                       .format(action, old_path, new_path))

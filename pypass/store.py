@@ -439,4 +439,40 @@ class Store():
 
     @trap(1)
     def list_dir(self, path):
-        pass
+        """Returns all directory and key entries for the given path.
+
+        :param str path: The directory to list relative to
+            :attr:`pypass.store.Store.store_dir`
+
+        :rtype: (list, list)
+        :returns: Two lists, the first for directories, the second for
+            keys.  ``None`` if `path` is not a directory.
+
+        :raises FileNotFoundError: if `path` is not a directory in the
+            password store.
+
+        """
+        if path is None:
+            path = ''
+        path_dir = os.path.join(self.store_dir, path)
+        if not os.path.isdir(path_dir):
+            raise FileNotFoundError('{} is not in the password store.'
+                                    .format(path))
+
+        dirs = []
+        keys = []
+
+        # We want to return the entries alphabetically sorted.
+        entries = os.listdir(path_dir)
+        entries.sort()
+        for entry in entries:
+            if entry.startswith('.'):
+                continue
+            entry_path = os.path.join(path_dir, entry)
+            if os.path.isdir(entry_path):
+                dirs.append(entry)
+            elif os.path.isfile(entry_path) and entry.endswith('.gpg'):
+                # Keys are named without their ending.
+                keys.append(entry[:-4])
+
+        return dirs, keys

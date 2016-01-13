@@ -399,7 +399,8 @@ class Store():
 
         if not os.path.isdir(old_path_full):
             old_path_full += '.gpg'
-            if not os.path.isdir(new_path_full) or new_path_full.endswith('/'):
+            if not (os.path.isdir(new_path_full)
+                    or new_path_full.endswith('/')):
                 new_path_full += '.gpg'
 
         new_path_full = _copy_move(old_path_full, new_path_full, force, move)

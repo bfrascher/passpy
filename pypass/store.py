@@ -47,38 +47,6 @@ from pypass.util import (
 )
 
 
-class StoreEntry():
-    """Represents a directory or file in the password store.
-    """
-    def __init__(self, name, path, is_key):
-        """Creates a new StoreEntry object.
-
-        :param str name: Name of the directory or file.
-
-        :param str path: The path to the file or directory relative to
-            :attr:`pypass.store.Store.store_dir`.
-
-        :param bool is_key: Indicates, whether the entry is a key or a
-            directory.
-
-        """
-        self.name = name
-        self.path = path
-        self.is_key_ = is_key
-
-    def is_dir(self):
-        return not self.is_key_
-
-    def is_key(self):
-        return self.is_key_
-
-    def get_name(self):
-        return self.name
-
-    def get_path(self):
-        return self.path
-
-
 class Store():
     """Python implementation of ZX2C4's password store.
     """

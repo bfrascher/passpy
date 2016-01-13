@@ -82,7 +82,9 @@ class StoreEntry():
 class Store():
     """Python implementation of ZX2C4's password store.
     """
-    def __init__(self, gpg_bin='gpg', git_bin='git', **kwargs):
+    def __init__(self, gpg_bin='gpg', git_bin='git',
+                 store_dir='~/.password-store', debug=False,
+                 use_agent=True):
         """Creates a new Store object.
 
         :param str gpg_bin: (optional) The path to the gpg
@@ -92,7 +94,7 @@ class Store():
             binary.
 
         :param str store_dir: (optional) The path to the password
-            store. Assumes '~/.password-store' if no value is given.
+            store.
 
         :param bool debug: (optional) Set to ``True`` to enable
             debugging information in logs.
@@ -101,7 +103,7 @@ class Store():
             using a gpg agent.
 
         """
-        if 'debug' in kwargs:
+        if debug:
             lvl = logging.DEBUG
         else:
             lvl = logging.WARNING
@@ -112,14 +114,10 @@ class Store():
 
         self.gpg_opts = ['--quiet', '--yes', '--compress-algo=none',
                          '--no-encrypt-to']
-        if 'use_agent' in kwargs:
+        if use_agent:
             self.gpg_opts += ['--batch', '--use-agent']
 
-        if 'store_dir' in kwargs:
-            self.store_dir = kwargs['store_dir']
-        else:
-            self.store_dir = os.path.join(os.path.expanduser('~'),
-                                          '.password-store')
+        self.store_dir = os.path.join(os.path.expanduser(store_dir))
 
         self.repo = _get_git_repository(self.store_dir)
 

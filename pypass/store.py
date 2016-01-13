@@ -138,6 +138,23 @@ class Store():
                         relative_root = relative_root[1:]
                     yield os.path.join(relative_root, key[:-4])
 
+    def _get_store_name(self, path):
+        """Returns the path relative to the store.
+
+        :param str path: The absolute path to an entry in the store.
+
+        :rtype: str
+        :returns: `path` relative to
+            :attr:`pypass.store.Store.store_dir`.
+
+        """
+        path = path.replace(self.store_dir, '', 1)
+        if path.startswith('/'):
+            path = path[1:]
+        if path.endswith('.gpg'):
+            path = path[:-4]
+        return path
+
     @trap('path')
     def init_store(self, gpg_ids, path=None):
         """Initialise the password store or a subdirectory with the gpg ids.
@@ -456,7 +473,7 @@ class Store():
             path = ''
         path_dir = os.path.join(self.store_dir, path)
         if not os.path.isdir(path_dir):
-            raise FileNotFoundError('{} is not in the password store.'
+            raise FileNotFoundError('{} is not a directory in the password store.'
                                     .format(path))
 
         dirs = []
@@ -470,9 +487,9 @@ class Store():
                 continue
             entry_path = os.path.join(path_dir, entry)
             if os.path.isdir(entry_path):
-                dirs.append(entry)
+                dirs.append(self._get_store_name(entry_path))
             elif os.path.isfile(entry_path) and entry.endswith('.gpg'):
                 # Keys are named without their ending.
-                keys.append(entry[:-4])
+                keys.append(self._get_store_name(entry_path))
 
         return dirs, keys

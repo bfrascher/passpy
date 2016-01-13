@@ -480,9 +480,7 @@ class Store():
         keys = []
 
         # We want to return the entries alphabetically sorted.
-        entries = os.listdir(path_dir)
-        entries.sort()
-        for entry in entries:
+        for entry in sorted(os.listdir(path_dir)):
             if entry.startswith('.'):
                 continue
             entry_path = os.path.join(path_dir, entry)

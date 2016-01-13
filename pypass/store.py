@@ -56,7 +56,7 @@ class StoreEntry():
         :param str name: Name of the directory or file.
 
         :param str path: The path to the file or directory relative to
-            `store_dir`.
+            :attr:`pypass.store.Store.store_dir`.
 
         :param bool is_key: Indicates, whether the entry is a key or a
             directory.
@@ -86,10 +86,10 @@ class Store():
         """Creates a new Store object.
 
         :param str gpg_bin: (optional) The path to the gpg
-            binary. Default: 'gpg'
+            binary.
 
         :param str git_bin: (optional) The path to the git
-            binary. Default: 'git'
+            binary.
 
         :param str store_dir: (optional) The path to the password
             store. Assumes '~/.password-store' if no value is given.
@@ -166,19 +166,19 @@ class Store():
 
         :param str path: (optional) If given, the gpg ids will only be
             set for the given directory.  The path is relative to
-            ``store_dir``.
+            :attr:`pypass.store.Store.store_dir`.
 
-        :raises: A :exc:`ValueError` if the there is a problem with
-            ``path``.
+        :raises ValueError: if the there is a problem with `path`.
 
-        :raises: :exc:`FileExistsError` if ``store_dir`` already
-            exists and is a file.
+        :raises FileExistsError: if
+            :attr:`pypass.store.Store.store_dir` already exists and is
+            a file.
 
-        :raises: A :exc:`FileNotFoundError` if the current gpg id
-            should be deleted, but none exists.
+        :raises FileNotFoundError: if the current gpg id should be
+            deleted, but none exists.
 
-        :raises: A :exc:`os.OSError` if the directories in path do not
-            exist and can't be created.
+        :raises OSError: if the directories in path do not exist and
+            can't be created.
 
         """
         if path is not None:
@@ -226,9 +226,11 @@ class Store():
                       .format(', '.join(gpg_ids)))
 
     def init_git(self):
-        """Initialise git for ``store_dir``.
+        """Initialise git for the password store.
 
-        Silently fails if ``repo`` is not None.
+        Silently fails if :attr:`pypass.store.Store.repo` is not
+        ``None``.
+
         """
         if self.repo is not None:
             return
@@ -249,16 +251,13 @@ class Store():
         """Reads the data of the key at path.
 
         :param str path: The path to the key (without '.gpg' ending)
-            relative to ``store_dir``.
+            relative to :attr:`pypass.store.Store.store_dir`.
 
         :rtype: str
-        :returns: The key data as a string or None, if the key does
-            not exist.
+        :returns: The key data as a string or ``None``, if the key
+            does not exist.
 
-        :raises: :exc:`FileNotFoundError` if path is not a file.
-
-        :raises: :exc:`pypass.util.OutsideStoreError` if path points
-            outside of ``store_dir``.
+        :raises FileNotFoundError: if `path` is not a file.
 
         """
         if path is None:
@@ -278,11 +277,11 @@ class Store():
 
         :param str key_data: The data of the key.
 
-        :param bool foce: (optional) If `True` path will be
-            overwritten if it exists.  Default: `False`.
+        :param bool foce: (optional) If ``True`` path will be
+            overwritten if it exists.
 
-        :raises: :exc:`FileExistsError` if a key already exists for
-            path and overwrite is `False`.
+        :raises FileExistsError: if a key already exists for path and
+            overwrite is ``False``.
 
         """
         if path is None or path == '':
@@ -304,10 +303,10 @@ class Store():
     def remove_path(self, path, recursive=False):
         """Removes the given key or directory from the store.
 
-        :param str path: The key or directory to remove.  Use `None`
-            or '' to delete the whole store.
+        :param str path: The key or directory to remove.  Use '' to
+            delete the whole store.
 
-        :param bool recursive: (optional) Set to `True` if nonempty
+        :param bool recursive: (optional) Set to ``True`` if nonempty
             directories should be removed.
 
         """
@@ -338,16 +337,15 @@ class Store():
 
         :param int length: The length of the new password.
 
-        :param bool symbols: (optional) If `True` non alphanumeric
-            characters will also be used in the new password. Default:
-            `True`.
+        :param bool symbols: (optional) If ``True`` non alphanumeric
+            characters will also be used in the new password.
 
-        :param bool force: (optional) If `True` an existing key at
-            `path` will be overwritten. Default: `False`.
+        :param bool force: (optional) If ``True`` an existing key at
+            `path` will be overwritten.
 
-        :param bool inplace: (optional) If `True` only the first line
-            of an existing key at `path` will be overwritten with the
-            new password.
+        :param bool inplace: (optional) If ``True`` only the first
+            line of an existing key at `path` will be overwritten with
+            the new password.
 
         """
         if path is None or path == '':
@@ -390,11 +388,11 @@ class Store():
             `new_path` ends in a trailing '/' it will always be
             treated as a directory.
 
-        :param bool force: If `True` any existing key or directory at
+        :param bool force: If ``True`` any existing key or directory at
             `new_path` will be overwritten.
 
-        :param bool move: If `True` the key or directory will be
-            moved.  If `False` the key or directory will be copied
+        :param bool move: If ``True`` the key or directory will be
+            moved.  If ``False`` the key or directory will be copied
             instead.
 
         """
@@ -433,7 +431,7 @@ class Store():
             `new_path` ends in a trailing '/' it will always be
             treated as a directory.
 
-        :param bool force: If `True` any existing key or directory at
+        :param bool force: If ``True`` any existing key or directory at
             `new_path` will be overwritten.
 
         """
@@ -448,7 +446,7 @@ class Store():
             `new_path` ends in a trailing '/' it will always be
             treated as a directory.
 
-        :param bool force: If `True` any existing key or directory at
+        :param bool force: If ``True`` any existing key or directory at
             `new_path` will be overwritten.
 
         """
@@ -469,10 +467,8 @@ class Store():
             password store.
 
         """
-        if path is None:
-            path = ''
         path_dir = os.path.join(self.store_dir, path)
-        if not os.path.isdir(path_dir):
+        if path is None or not os.path.isdir(path_dir):
             raise FileNotFoundError('{} is not a directory in the password store.'
                                     .format(path))
 

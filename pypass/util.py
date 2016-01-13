@@ -149,7 +149,7 @@ def _gen_password(length, symbols=True):
     if symbols:
         chars += string.punctuation
 
-    return bytes(''.join(rand.choice(chars) for _ in range(length)), 'utf')
+    return ''.join(rand.choice(chars) for _ in range(length))
 
 
 def _copy_move(src, dst, force=False, move=False):

@@ -365,9 +365,9 @@ class Store():
             action = 'Replace'
             key_data = _read_key(key_path, gpg_bin=self.gpg_bin,
                                  gpg_opts=self.gpg_opts)
-            lines = key_data.split(b'\n')
+            lines = key_data.split('\n')
             lines[0] = password
-            _write_key(key_path, b'\n'.join(lines), gpg_bin=self.gpg_bin,
+            _write_key(key_path, '\n'.join(lines), gpg_bin=self.gpg_bin,
                        gpg_opts=self.gpg_opts)
 
         _git_add_path(self.repo, key_path,

@@ -74,7 +74,7 @@ def _read_key(path, gpg_bin, gpg_opts):
     """
     gpg = GPG(gpgbinary=gpg_bin, options=gpg_opts)
     with open(path, 'rb') as key_file:
-        return gpg.decrypt_file(key_file).data
+        return str(gpg.decrypt_file(key_file))
 
 
 def _write_key(path, key_data, gpg_bin, gpg_opts):

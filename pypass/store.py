@@ -111,7 +111,8 @@ class Store():
 
         :rtype: str
         :returns: `path` relative to
-            :attr:`pypass.store.Store.store_dir`.
+            :attr:`pypass.store.Store.store_dir` without a leading '/'
+            and trailing '.gpg' if any.
 
         """
         path = path.replace(self.store_dir, '', 1)
@@ -179,6 +180,7 @@ class Store():
             shutil.rmtree(gpg_id_dir, ignore_errors=True)
         else:
             os.makedirs(gpg_id_dir)
+            # pass needs the gpg id file to be newline terminated.
             with open(gpg_id_path, 'w') as gpg_id_file:
                 gpg_id_file.write('\n'.join(gpg_ids))
                 gpg_id_file.write('\n')
@@ -195,7 +197,7 @@ class Store():
         """Initialise git for the password store.
 
         Silently fails if :attr:`pypass.store.Store.repo` is not
-        ``None``.
+            ``None``.
 
         """
         if self.repo is not None:

@@ -59,8 +59,11 @@ class Store():
         :param str gpg_bin: (optional) The path to the gpg
             binary.
 
-        :param str git_bin: (optional) The path to the git
-            binary.
+        :param str git_bin: (optional) The path to the git binary.
+            CURRENTLY DOES NOTHING You will need to set the
+            environmental variable GIT_PYTHON_GIT_EXECUTABLE to your
+            path to git binary if your git binary not in your PATH
+            already.
 
         :param str store_dir: (optional) The path to the password
             store.

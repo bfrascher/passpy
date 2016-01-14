@@ -23,6 +23,7 @@ store module
 
 import logging
 import os
+import re
 import shutil
 
 from pypass.git import (
@@ -456,3 +457,68 @@ class Store():
                 keys.append(self._get_store_name(entry_path))
 
         return dirs, keys
+
+    def find(self, names):
+        """Find keys by name.
+
+        Finds any keys in the password store that contain any one
+        entry in `names`.
+
+        :param names: The name or names to find keys for.
+        :type names: str or list
+
+        :rtype: list
+        :returns: A list of keys whose name contain any one entry in
+            `names`.
+
+        """
+        if names is None:
+            return []
+        if not isinstance(names, list):
+            names = [names]
+
+        keys = []
+        for key in self:
+            for name in names:
+                if key.find(name) != -1:
+                    keys.append(key)
+                    # No need to append a key twice.
+                    break
+        return keys
+
+    def search(self, terms):
+        """Search through all keys.
+
+        :param terms: The terms to search for.  The terms will be
+            compiled to a regular expression.
+        :type terms: str or list
+
+        :rtype: dict
+        :returns: The dictionary has an entry for each key, that
+            matched a term.  The entry for that key then contains a
+            list of tuples with the line the term was found on and the
+            match object.
+
+        """
+        if terms is None:
+            return []
+        if not isinstance(terms, list):
+            terms = [terms]
+
+        expressions = []
+        for term in terms:
+            expressions.append(re.compile(term))
+
+        results = {}
+        for key in self:
+            data = self.get_key(key)
+            for line in data.split('\n'):
+                for regex in expressions:
+                    match = regex.search(line)
+                    if match is not None:
+                        if key in results:
+                            results[key].append((line, match))
+                        else:
+                            results[key] = [(line, match)]
+
+        return results

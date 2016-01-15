@@ -101,34 +101,6 @@ def initialised(store):
     return initialised_decorator
 
 
-def _get_parent_dir(path):
-    """Returns the parent folder of path.
-
-    :param str path: A file or folder.
-
-    :rtype: str
-    :returns: The parent folder of path.  Can be ``None``.
-
-    """
-    if path is None:
-        return None
-    return '/'.join(path.split('/')[:-1])
-
-
-def _get_name(path):
-    """Returns the name of the file or directory at path.
-
-    :param str path: The file or directory to get the name of.
-
-    :rtype: str
-    :returns: The name of the file or directory.  Can be ``None``.
-
-    """
-    if path is None:
-        return None
-    return path.split('/')[-1]
-
-
 # TODO(benedikt) Check that this covers all the cases of the original function.
 def _contains_sneaky_path(paths):
     """Check if the user tries to escape from the password store.
@@ -221,9 +193,9 @@ def _copy_move(src, dst, force=False, move=False):
         if dst.endswith('/') and not os.path.exists(dst):
             os.makedirs(dst, exist_ok=True)
         else:
-            os.makedirs(_get_parent_dir(dst), exist_ok=True)
+            os.makedirs(os.path.dirname(dst), exist_ok=True)
         if os.path.isdir(dst):
-            dst = os.path.join(dst, _get_name(src))
+            dst = os.path.join(dst, os.path.basename(src))
 
         if os.path.exists(dst) and not force:
             raise FileExistsError('{} already exists.'.format(dst))
@@ -233,7 +205,7 @@ def _copy_move(src, dst, force=False, move=False):
             raise IOError('Can\'t copy a directory into itself.')
 
         if os.path.exists(dst):
-            dst = os.path.join(dst, _get_name(src))
+            dst = os.path.join(dst, os.path.basename(src))
         if not os.path.exists(dst):
             os.makedirs(dst, exist_ok=True)
 

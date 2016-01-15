@@ -100,38 +100,6 @@ def initialised(func):
     return initialised_wrapper
 
 
-# TODO(benedikt) Check that this covers all the cases of the original function.
-def _contains_sneaky_path(paths):
-    """Check if the user tries to escape from the password store.
-
-    To avoid the user escaping out of the boundaries of
-    :attr:`pypass.store.Store.store_dir` we check, if a user given
-    path contains any segment consisting of '..'.
-
-    :param list paths: List of paths to check.
-
-    :rtype: bool
-    :returns: ``True`` if any path in paths contains '..' as a
-        segment.  ``False`` otherwise.
-
-    """
-    # BEGIN OLD CODE ==================================================
-    # Matches any path where at least one segment is '..', '\..',
-    # '.\.' or '\.\.'.
-    # regex = re.compile(r'(^|/)\\?\.\\?\.($|/)')
-    # END OLD CODE ==================================================
-    # Matches any segment of path that equals '..'.
-    if paths is None:
-        return False
-    regex = re.compile(r'(^|/)\.\.($|/)')
-    for path in paths:
-        if path is None:
-            continue
-        if regex.search(path) is not None:
-            return True
-    return False
-
-
 def _gen_password(length, symbols=True):
     """Generates a random string.
 

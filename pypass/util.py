@@ -75,30 +75,29 @@ def trap(path_index):
     return trap_decorator
 
 
-def initialised(store):
+def initialised(func):
     """Check that the store is initialised before running.
 
     Used as a decorator in methods for :class:`pypass.store.Store`.
 
-    :param store: The store instance that is to be checked.
-    :type store: :class:`pypass.store.Store`
+    :param func: A method of :class:`pypass.store.Store`.
+    :type store: function
 
     :rtype: function
-    :returns: The function if the store is initialised.
+    :returns: The method if the store is initialised.
 
     :raises pypass.exceptions.StoreNotInitialisedError: if the store
         is not initialised.
 
     """
-    def initialised_decorator(func):
-        @wraps(func)
-        def initialised_wrapper(*args, **kwargs):
-            if not store.is_init():
-                raise StoreNotInitialisedError(
-                    'You need to initialise the store first.')
-            return func(*args, **kwargs)
-        return initialised_wrapper
-    return initialised_decorator
+    @wraps(func)
+    def initialised_wrapper(*args, **kwargs):
+        store = args[0]
+        if not store.is_init():
+            raise StoreNotInitialisedError(
+                'You need to initialise the store first.')
+        return func(*args, **kwargs)
+    return initialised_wrapper
 
 
 # TODO(benedikt) Check that this covers all the cases of the original function.

@@ -48,17 +48,24 @@ def trap(path_index):
     def trap_decorator(func):
         @wraps(func)
         def trap_wrapper(*args, **kwargs):
-            if isinstance(path_index, str):
-                if path_index in kwargs:
-                    path_list = kwargs[path_index]
-                else:
-                    path_list = None
-            else:
+            try:
                 path_list = args[path_index]
+            except TypeError:
+                try:
+                    path_list = kwargs[path_index]
+                except KeyError:
+                    path_list = None
+            except IndexError:
+                path_list = None
+
             if path_list is not None and not isinstance(path_list, list):
                 path_list = [path_list]
-            if _contains_sneaky_path(path_list):
-                raise PermissionError('Sneaky!')
+
+            for path in path_list:
+                path = os.path.normpath(path)
+                if path.startswith('..' + os.sep) or path == '..':
+                    raise PermissionError('Sneaky!')
+
             return func(*args, **kwargs)
         return trap_wrapper
     return trap_decorator

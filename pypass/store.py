@@ -202,6 +202,7 @@ class Store():
                       'Reencrypt password store using new GPG id {}.'
                       .format(', '.join(gpg_ids)))
 
+    @initialised
     def init_git(self):
         """Initialise git for the password store.
 

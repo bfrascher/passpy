@@ -64,11 +64,11 @@ def trap(path_index):
 
             if path_list is not None and not isinstance(path_list, list):
                 path_list = [path_list]
-
-            for path in path_list:
-                path = os.path.normpath(path)
-                if path.startswith('..' + os.sep) or path == '..':
-                    raise PermissionError('Sneaky!')
+            if path_list is not None:
+                for path in path_list:
+                    path = os.path.normpath(path)
+                    if path.startswith('..' + os.sep) or path == '..':
+                        raise PermissionError('Sneaky!')
 
             return func(*args, **kwargs)
         return trap_wrapper

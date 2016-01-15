@@ -21,7 +21,7 @@ gpg module
 
 This module includes all calls to the `gnupg wrapper`_.
 
-.. _gnupg wrapper: https://github.com/isislovecruft/python-gnupg
+.. _gnupg wrapper: https://bitbucket.org/vinay.sajip/python-gnupg
 """
 
 import os

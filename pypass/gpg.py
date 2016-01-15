@@ -87,6 +87,9 @@ def _write_key(path, key_data, gpg_bin, gpg_opts):
     """
     gpg = GPG(gpgbinary=gpg_bin, options=gpg_opts)
     gpg_recipients = _get_gpg_recipients(path)
+    # pass always ends it's files with an endline
+    if not key_data.endswith('\n'):
+        key_data += '\n'
     key_data_enc = gpg.encrypt(key_data, gpg_recipients).data
     with open(path, 'wb') as key_file:
         key_file.write(key_data_enc)

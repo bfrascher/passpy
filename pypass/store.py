@@ -43,7 +43,6 @@ from pypass.gpg import (
 from pypass.util import (
     trap,
     initialised,
-    _get_parent_dir,
     _gen_password,
     _copy_move
 )
@@ -90,8 +89,7 @@ class Store():
         if use_agent:
             self.gpg_opts += ['--batch', '--use-agent']
 
-        self.store_dir = os.path.join(os.path.expanduser(store_dir))
-
+        self.store_dir = os.path.normpath(os.path.expanduser(store_dir))
         self.repo = _get_git_repository(self.store_dir)
 
     def __iter__(self):
@@ -120,9 +118,8 @@ class Store():
             and trailing '.gpg' if any.
 
         """
-        path = path.replace(self.store_dir, '', 1)
-        if path.startswith('/'):
-            path = path[1:]
+        path = os.path.relpath(path, self.store_dir)
+        # Keys are identified without their file ending.
         if path.endswith('.gpg'):
             path = path[:-4]
         return path
@@ -160,6 +157,7 @@ class Store():
 
         """
         if path is not None:
+            path = os.path.normpath(path)
             if not os.path.isdir(path) and os.path.exists(path):
                 raise FileExistsError('{}/{} exists but is not a directory.'
                                       .format(self.store_dir, path))
@@ -240,8 +238,9 @@ class Store():
         :raises FileNotFoundError: if `path` is not a file.
 
         """
-        if path is None:
+        if path is None or path == '':
             return None
+        path = os.path.normpath(path)
 
         key_path = os.path.join(self.store_dir, path + '.gpg')
         if os.path.isfile(key_path):
@@ -267,9 +266,10 @@ class Store():
         """
         if path is None or path == '':
             return
+        path = os.path.normpath(path)
 
         key_path = os.path.join(self.store_dir, path + '.gpg')
-        key_dir = _get_parent_dir(path)
+        key_dir = os.path.dirname(key_path)
         if os.path.exists(key_path) and not force:
             raise FileExistsError('An entry already exists for {}.'
                                   .format(path))
@@ -293,6 +293,7 @@ class Store():
 
         """
         key_path = os.path.join(self.store_dir, path)
+        key_path = os.path.normpath(key_path)
         if os.path.isdir(key_path):
             if recursive:
                 shutil.rmtree(key_path)
@@ -333,8 +334,9 @@ class Store():
         """
         if path is None or path == '':
             return None
+        path = os.path.normpath(path)
         key_path = os.path.join(self.store_dir, path + '.gpg')
-        key_dir = _get_parent_dir(path)
+        key_dir = os.path.dirname(key_path)
         if os.path.exists(key_path) and not (force or inplace):
             raise FileExistsError('An entry already exists for {}.'
                                   .format(path))
@@ -380,6 +382,8 @@ class Store():
             instead.
 
         """
+        old_path = os.path.normpath(old_path)
+        new_path = os.path.normpath(new_path)
         old_path_full = os.path.join(self.store_dir, old_path)
         new_path_full = os.path.join(self.store_dir, new_path)
 
@@ -453,6 +457,7 @@ class Store():
             password store.
 
         """
+        path = os.path.normpath(path)
         path_dir = os.path.join(self.store_dir, path)
         if path is None or not os.path.isdir(path_dir):
             raise FileNotFoundError('{} is not a directory in the password store.'

@@ -102,7 +102,7 @@ class Store():
                 if key.endswith('.gpg'):
                     # Keys are always identified without the '.gpg'
                     # ending and are relative to the `store_dir`.
-                    relative_root = root.replace(self.store_dir, '', 1)
+                    relative_root = os.path.relpath(root, self.store_dir)
                     if relative_root.startswith('/'):
                         relative_root = relative_root[1:]
                     yield os.path.join(relative_root, key[:-4])

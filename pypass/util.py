@@ -189,7 +189,7 @@ def _copy_move(src, dst, force=False, move=False):
         operation = shutil.copy
 
     if os.path.isfile(src):
-        if dst.endswith('/') and not os.path.exists(dst):
+        if dst.endswith(os.sep) and not os.path.exists(dst):
             os.makedirs(dst, exist_ok=True)
         else:
             os.makedirs(os.path.dirname(dst), exist_ok=True)
@@ -209,9 +209,7 @@ def _copy_move(src, dst, force=False, move=False):
             os.makedirs(dst, exist_ok=True)
 
         for root, dirs, files in os.walk(src):
-            mid = root.replace(src, '', 1)
-            if mid.startswith('/'):
-                mid = mid[1:]
+            mid = os.path.relpath(root, src)
 
             for d in dirs:
                 dstdir = os.path.join(dst, mid, d)

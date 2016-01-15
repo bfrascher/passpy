@@ -42,6 +42,7 @@ from pypass.gpg import (
 
 from pypass.util import (
     trap,
+    initialised,
     _get_parent_dir,
     _gen_password,
     _copy_move
@@ -125,6 +126,12 @@ class Store():
         if path.endswith('.gpg'):
             path = path[:-4]
         return path
+
+    def is_init(self):
+        gpg_id_path = os.path.join(self.store_dir, '.gpg-id')
+        if os.path.isfile(gpg_id_path):
+            return True
+        return False
 
     @trap('path')
     def init_store(self, gpg_ids, path=None):
@@ -218,6 +225,7 @@ class Store():
         _git_config(self.repo, '--local', 'diff.gpg.textconf',
                    '"' + self.gpg_bin + ' -d ' + ' '.join(self.gpg_opts) + '"')
 
+    @initialised
     @trap(1)
     def get_key(self, path):
         """Reads the data of the key at path.
@@ -241,6 +249,7 @@ class Store():
         raise FileNotFoundError('{} is not in the password store.'
                                 .format(path))
 
+    @initialised
     @trap(1)
     def set_key(self, path, key_data, force=False):
         """Add a key to the store or update an existing one.
@@ -271,6 +280,7 @@ class Store():
         _git_add_path(self.repo, key_path,
                       'Add given password for {} to store.'.format(path))
 
+    @initialised
     @trap(1)
     def remove_path(self, path, recursive=False):
         """Removes the given key or directory from the store.
@@ -300,6 +310,7 @@ class Store():
                              'Remove {} from store.'.format(path),
                              recursive=recursive)
 
+    @initialised
     @trap(1)
     def gen_key(self, path, length, symbols=True, force=False,
                 inplace=False):
@@ -348,6 +359,7 @@ class Store():
                       '{} generated password for {}.'.format(action, path))
         return password
 
+    @initialised
     @trap(1)
     @trap(2)
     def _copy_move_path(self, old_path, new_path, force=False,
@@ -425,6 +437,7 @@ class Store():
         """
         self._copy_move_path(old_path, new_path, force, True)
 
+    @initialised
     @trap(1)
     def list_dir(self, path):
         """Returns all directory and key entries for the given path.
@@ -461,6 +474,7 @@ class Store():
 
         return dirs, keys
 
+    @initialised
     def find(self, names):
         """Find keys by name.
 
@@ -489,6 +503,7 @@ class Store():
                     break
         return keys
 
+    @initialised
     def search(self, terms):
         """Search through all keys.
 

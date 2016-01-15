@@ -28,8 +28,6 @@ import os
 
 from gnupg import GPG
 
-from pypass.util import _get_parent_dir
-
 
 def _get_gpg_recipients(path):
     """Get the GPG recipients for the given path.
@@ -48,7 +46,7 @@ def _get_gpg_recipients(path):
         gpg_id_path = os.path.join(path, '.gpg-id')
         if os.path.isfile(gpg_id_path):
             break;
-        path = _get_parent_dir(path)
+        path = os.path.dirname(path)
 
     if path is None or path == '':
         raise FileNotFoundError(

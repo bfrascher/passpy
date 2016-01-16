@@ -526,39 +526,32 @@ class Store():
         return keys
 
     @initialised
-    def search(self, terms):
+    def search(self, term):
         """Search through all keys.
 
-        :param terms: The terms to search for.  The terms will be
-            compiled to a regular expression.
-        :type terms: str or list
+        :param str term: The term to search for.  The term will be
+            compiled as a regular expression.
 
         :rtype: dict
         :returns: The dictionary has an entry for each key, that
-            matched a term.  The entry for that key then contains a
-            list of tuples with the line the term was found on and the
-            match object.
+            matched the given term.  The entry for that key then
+            contains a list of tuples with the line the term was found
+            on and the match object.
 
         """
-        if terms is None:
-            return []
-        if not isinstance(terms, list):
-            terms = [terms]
+        if term is None:
+            return {}
 
-        expressions = []
-        for term in terms:
-            expressions.append(re.compile(term))
-
+        regex = re.compile(term)
         results = {}
         for key in self:
             data = self.get_key(key)
             for line in data.split('\n'):
-                for regex in expressions:
-                    match = regex.search(line)
-                    if match is not None:
-                        if key in results:
-                            results[key].append((line, match))
-                        else:
-                            results[key] = [(line, match)]
+                match = regex.search(line)
+                if match is not None:
+                    if key in results:
+                        results[key].append((line, match))
+                    else:
+                        results[key] = [(line, match)]
 
         return results

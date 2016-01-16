@@ -6,6 +6,11 @@ from pypass import (
 )
 
 
+MSG_STORE_NOT_INITIALISED_ERROR = ('You need to call {} init first.'
+                                   .format(__name__))
+MSG_PERMISSION_ERROR = 'Nah-ah!'
+
+
 class PassGroup(click.Group):
     def get_command(self, ctx, cmd_name):
         if cmd_name == 'list':
@@ -41,12 +46,15 @@ def cli(ctx):
               help='Only set the gpg-ids for the given subfolder.')
 @click.argument('gpg_ids', nargs=-1, metavar='gpg-id')
 @click.pass_context
-def init(ctx, path, gpg_ids):
+def init(ctx, gpg_ids, path):
     """Initialize new password storage and use `gpg-id` for encryption.
     Selectively reencrypts existing passwords using new `gpg-id`.
 
     """
-    ctx.obj.init_store(list(gpg_ids), path=path)
+    try:
+        ctx.obj.init_store(list(gpg_ids), path=path)
+    except PermissionError:
+        click.echo(MSG_PERMISSION_ERROR)
 
 
 @cli.command()
@@ -62,7 +70,8 @@ def ls(ctx, subfolder):
     except FileNotFoundError:
         show(ctx, subfolder, False)
     except StoreNotInitialisedError:
-        click.echo('You need to call {} init first.'.format(__name__))
+        click.echo(MSG_STORE_NOT_INITIALISED_ERROR)
+        return 1
 
 
 @cli.command()
@@ -72,8 +81,8 @@ def grep(ctx, search_string):
     try:
         results = ctx.obj.search(search_string)
     except StoreNotInitialisedError:
-        click.echo('You need to call {} init first.'.format(__name__))
-        return
+        click.echo(MSG_STORE_NOT_INITIALISED_ERROR)
+        return 1
 
     for key in results:
         # TODO(benedikt) Color this line
@@ -90,8 +99,8 @@ def find(ctx, pass_names):
     try:
         keys = ctx.obj.find(list(pass_names))
     except StoreNotInitialisedError:
-        click.echo('You need to call {} init first.'.format(__name__))
-        return
+        click.echo(MSG_STORE_NOT_INITIALISED_ERROR)
+        return 1
 
     # TODO(benedikt) Pretty up the output (tree-like?)
     for key in keys:
@@ -108,8 +117,11 @@ def show(ctx, pass_name, clip):
     try:
         data = ctx.obj.get_key(pass_name)
     except StoreNotInitialisedError:
-        click.echo('You need to call {} init first.'.format(__name__))
-        return
+        click.echo(MSG_STORE_NOT_INITIALISED_ERROR)
+        return 1
+    except PermissionError:
+        click.echo(MSG_PERMISSION_ERROR)
+        return 1
 
     if clip:
         # TODO(benedikt) Copy to clipboard
@@ -151,7 +163,11 @@ def insert(ctx, pass_name, input_method, force):
     try:
         ctx.obj.set_key(pass_name, data, force=force)
     except StoreNotInitialisedError:
-        click.echo('You need to call {} init first.'.format(__name__))
+        click.echo(MSG_STORE_NOT_INITIALISED_ERROR)
+        return 1
+    except PermissionError:
+        click.echo(MSG_PERMISSION_ERROR)
+        return 1
 
 
 @cli.command()
@@ -183,8 +199,11 @@ def generate(ctx, pass_name, pass_length, no_symbols, clip, in_place, force):
     try:
         password = ctx.obj.gen_key(pass_name, pass_length, symbols, force, in_place)
     except StoreNotInitialisedError:
-        click.echo('You need to call {} init first.'.format(__name__))
-        return
+        click.echo(MSG_STORE_NOT_INITIALISED_ERROR)
+        return 1
+    except PermissionError:
+        click.echo(MSG_PERMISSION_ERROR)
+        return 1
 
     if clip:
         # TODO(benedikt) Copy password to the clipboard
@@ -206,9 +225,14 @@ def rm(ctx, pass_name, recursive, force):
     try:
         ctx.obj.remove_path(pass_name, recursive)
     except StoreNotInitialisedError:
-        click.echo('You need to call {} init first.'.format(__name__))
+        click.echo(MSG_STORE_NOT_INITIALISED_ERROR)
+        return 1
     except FileNotFoundError:
         click.echo('{} is not in the password store.'.format(pass_name))
+        return 1
+    except PermissionError:
+        click.echo(MSG_PERMISSION_ERROR)
+        return 1
 
 
 @cli.command(options_metavar='[ --force,-f ]')
@@ -222,9 +246,14 @@ def mv(ctx, old_path, new_path, force):
     try:
         ctx.obj.move_path(old_path, new_path, force)
     except StoreNotInitialisedError:
-        click.echo('You need to call {} init first.'.format(__name__))
+        click.echo(MSG_STORE_NOT_INITIALISED_ERROR)
+        return 1
     except FileNotFoundError:
         click.echo('{} is not in the password store.'.format(old_path))
+        return 1
+    except PermissionError:
+        click.echo(MSG_PERMISSION_ERROR)
+        return 1
 
 
 @cli.command(options_metavar='[ --force,-f ]')
@@ -246,16 +275,20 @@ def cp(ctx, old_path, new_path, force):
     try:
         ctx.obj.copy_path(old_path, new_path, force)
     except StoreNotInitialisedError:
-        click.echo('You need to call {} init first.'.format(__name__))
+        click.echo(MSG_STORE_NOT_INITIALISED_ERROR)
+        return 1
     except FileNotFoundError:
         click.echo('{} is not in the password store.'.format(old_path))
+        return 1
+    except PermissionError:
+        click.echo(MSG_PERMISSION_ERROR)
+        return 1
 
 
 @cli.command()
 @click.pass_context
 def git(ctx):
     pass
-
 
 
 if __name__ == '__main__':

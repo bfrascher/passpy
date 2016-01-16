@@ -23,7 +23,6 @@ util module
 
 import os
 import random
-import re
 import shutil
 import string
 

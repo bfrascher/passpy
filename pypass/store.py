@@ -93,19 +93,7 @@ class Store():
         self.repo = _get_git_repository(self.store_dir)
 
     def __iter__(self):
-        for root, dirs, keys in os.walk(self.store_dir):
-            # Ensure we walk through the directories and keys in
-            # lexicographic order.
-            dirs.sort()
-            keys.sort()
-            for key in keys:
-                if key.endswith('.gpg'):
-                    # Keys are always identified without the '.gpg'
-                    # ending and are relative to the `store_dir`.
-                    relative_root = os.path.relpath(root, self.store_dir)
-                    if relative_root.startswith('/'):
-                        relative_root = relative_root[1:]
-                    yield os.path.join(relative_root, key[:-4])
+        return self.iter_dir('')
 
     def _get_store_name(self, path):
         """Returns the path relative to the store.
@@ -479,6 +467,34 @@ class Store():
                 keys.append(self._get_store_name(entry_path))
 
         return dirs, keys
+
+    @initialised
+    @trap(1)
+    def iter_dir(self, path):
+        path = os.path.normpath(path)
+        path_dir = os.path.join(self.store_dir, path)
+        if path is None or not os.path.isdir(path_dir):
+            raise FileNotFoundError('{} is not a directory in the password store.'
+                                    .format(path))
+
+        # List keys in lexicographical order.
+        entries = sorted(os.listdir(path_dir))
+        for entry in entries:
+            # Ignore hidden files and directories as pass does the same.
+            if entry.startswith('.'):
+                continue
+            entry_path = os.path.join(path_dir, entry)
+            entry_path_rel = os.path.relpath(entry_path, self.store_dir)
+            if os.path.isdir(entry_path):
+                yield from self.iter_dir(entry_path_rel)
+            else:
+                # pass also shows files that do not end on .gpg in
+                # it's overview, but will throw an error if trying to
+                # access these files.  As this would make it harder to
+                # automatically iterate over the keys in the store, we
+                # just show files, that (probably) are in the store.
+                if entry.endswith('.gpg'):
+                    yield entry_path_rel[:-4]
 
     @initialised
     def find(self, names):

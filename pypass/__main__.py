@@ -36,9 +36,24 @@ class PassGroup(click.Group):
 
 
 @click.group(cls=PassGroup)
+@click.option('--gpg_bin', envvar='PYPASS_GPG_BIN', default='gpg2')
+@click.option('--git_bin', envvar='PYPASS_GIT_BIN', default='git')
+@click.option('--store_dir', envvar='PYPASS_STORE_DIR',
+                default='~/.password-store')
+@click.option('--debug', envvar='PYPASS_DEBUG', is_flag=True)
+@click.option('--no_agent', envvar='PYPASS_NO_AGENT', is_flag=True)
 @click.pass_context
-def cli(ctx):
-    ctx.obj = Store()
+def cli(ctx, gpg_bin, git_bin, store_dir, debug, no_agent):
+    if debug:
+        debug = True
+    else:
+        debug = False
+
+    if no_agent:
+        use_agent = False
+    else:
+        use_agent = True
+    ctx.obj = Store(gpg_bin, git_bin, store_dir, debug, use_agent, True, True)
 
 
 @cli.command(options_metavar='[ --path,-p ]')
@@ -58,7 +73,7 @@ def init(ctx, gpg_ids, path):
 
 
 @cli.command()
-@click.argument('subfolder', type=str)
+@click.argument('subfolder', type=str, default='.')
 @click.pass_context
 def ls(ctx, subfolder):
     # TODO(benedikt) Generate pretty output
@@ -111,11 +126,15 @@ def find(ctx, pass_names):
 @click.option('-c', '--clip', is_flag=True,
               help='Copy the password to the clipboard instead of '
               'printing it to the command line.')
-@click.argument('pass_name', type=str, metavar='pass-name')
+@click.argument('pass_name', type=str, metavar='pass-name', default='.')
 @click.pass_context
 def show(ctx, pass_name, clip):
     try:
         data = ctx.obj.get_key(pass_name)
+    # If pass_name is actually a folder in the password store pass
+    # lists the folder instead.
+    except FileNotFoundError:
+        ls(ctx, pass_name)
     except StoreNotInitialisedError:
         click.echo(MSG_STORE_NOT_INITIALISED_ERROR)
         return 1
@@ -127,7 +146,9 @@ def show(ctx, pass_name, clip):
         # TODO(benedikt) Copy to clipboard
         pass
     else:
-        clip.echo(data)
+        # The key data always ends with a newline.  So no need to add
+        # another one.
+        click.echo(data, nl=False)
 
 
 @cli.command(options_metavar='[ --echo,-e | --multiline,-m ] [ --force,-f ]')

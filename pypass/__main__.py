@@ -243,8 +243,8 @@ def edit(ctx, pass_name):
     with open(path, 'r') as tmp_file:
         data = tmp_file.read()
 
-    os.remove(path)
     ctx.obj.set_key(pass_name, data, force=True)
+    os.remove(path)
 
 
 @cli.command(options_metavar='[ --no-symbols,-n ] [ --clip,-c ] '

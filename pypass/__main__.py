@@ -1,3 +1,19 @@
+# pypass -- A Python implementation of ZX2C4's pass.
+# Copyright (C) 2016 Benedikt Rascher-Friesenhausen <benediktrascherfriesenhausen@gmail.com>
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 import click
 import os
 import subprocess
@@ -48,14 +64,32 @@ class PassGroup(click.Group):
 
 
 @click.group(cls=PassGroup)
-@click.option('--gpg_bin', envvar='PYPASS_GPG_BIN', default='gpg2')
-@click.option('--git_bin', envvar='PYPASS_GIT_BIN', default='git')
+@click.option('--gpg_bin', envvar='PYPASS_GPG_BIN', default='gpg2',
+              help='The path to your gpg2 binary.  Only necessary '
+              'if gpg2 is not already in your PATH.  Alternatively '
+              'you can set the PYPASS_GPG_BIN environment variable '
+              'with the path.')
+@click.option('--git_bin', envvar='PYPASS_GIT_BIN', default='git',
+              help='The path to your git binary.  Only necessary '
+              'if git is not already in your PATH.  Alternatively '
+              'you can set the PYPASS_GIT_BIN environment variable '
+              'with the path.')
 @click.option('--store_dir', envvar='PYPASS_STORE_DIR',
-                default='~/.password-store')
-@click.option('--debug', envvar='PYPASS_DEBUG', is_flag=True)
-@click.option('--no_agent', envvar='PYPASS_NO_AGENT', is_flag=True)
+              default='~/.password-store',
+              help='The path to the directory to use for the '
+              'password store.  Alternatively you can set the '
+              'PYPASS_STORE_DIR environment variable with the path.')
+@click.option('--debug', envvar='PYPASS_DEBUG', is_flag=True,
+              help='Enables debug mode.  Alternatively you can set '
+              'the PYPASS_DEBUG environment variable.')
+@click.option('--no_agent', envvar='PYPASS_NO_AGENT', is_flag=True,
+              help='Pass this along if you don\'t have an ssh agent '
+              'running.  Alternatively you can set the PYPASS_NO_AGENT '
+              'environment variable.')
 @click.pass_context
 def cli(ctx, gpg_bin, git_bin, store_dir, debug, no_agent):
+    """
+    """
     if debug:
         debug = True
     else:

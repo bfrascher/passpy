@@ -9,6 +9,7 @@ from pypass import (
 MSG_STORE_NOT_INITIALISED_ERROR = ('You need to call {} init first.'
                                    .format(__name__))
 MSG_PERMISSION_ERROR = 'Nah-ah!'
+MSG_FILE_NOT_FOUND = 'Error: {} is not in the password store.'
 
 
 class PassGroup(click.Group):
@@ -75,7 +76,7 @@ def init(ctx, gpg_ids, path):
 @cli.command()
 @click.argument('subfolder', type=str, default='.')
 @click.pass_context
-def ls(ctx, subfolder):
+def ls(ctx, subfolder, passthrough=False):
     # TODO(benedikt) Generate pretty output
     try:
         for key in ctx.obj.iter_dir(subfolder):
@@ -83,7 +84,10 @@ def ls(ctx, subfolder):
     # If subfolder is actually a key in the password store pass shows
     # the contents of that key.
     except FileNotFoundError:
-        show(ctx, subfolder, False)
+        if not passthrough:
+            ctx.invoke(show, pass_name=subfolder, clip=False, passthrough=True)
+        else:
+            click.echo(MSG_FILE_NOT_FOUND.format(subfolder))
     except StoreNotInitialisedError:
         click.echo(MSG_STORE_NOT_INITIALISED_ERROR)
         return 1
@@ -128,13 +132,17 @@ def find(ctx, pass_names):
               'printing it to the command line.')
 @click.argument('pass_name', type=str, metavar='pass-name', default='.')
 @click.pass_context
-def show(ctx, pass_name, clip):
+def show(ctx, pass_name, clip, passthrough=False):
     try:
         data = ctx.obj.get_key(pass_name)
     # If pass_name is actually a folder in the password store pass
     # lists the folder instead.
     except FileNotFoundError:
-        ls(ctx, pass_name)
+        if not passthrough:
+            return ctx.invoke(ls, subfolder=pass_name, passthrough=True)
+        else:
+            click.echo(MSG_FILE_NOT_FOUND.format(pass_name))
+            return 1
     except StoreNotInitialisedError:
         click.echo(MSG_STORE_NOT_INITIALISED_ERROR)
         return 1

@@ -1,10 +1,21 @@
 import click
+import os
+import subprocess
+import sys
+import tempfile
 
 from pypass import (
     Store,
     StoreNotInitialisedError
 )
 
+
+if sys.platform.startswith('nt') or sys.platform.startswith('cygwin'):
+    DEFAULT_EDITOR = 'Notepad'
+elif sys.platform.startswith('darwin'):
+    DEFAULT_EDITOR = 'TextEdit'
+else:
+    DEFAULT_EDITOR = 'vi'
 
 MSG_STORE_NOT_INITIALISED_ERROR = ('You need to call {} init first.'
                                    .format(__name__))
@@ -203,7 +214,35 @@ def insert(ctx, pass_name, input_method, force):
 @click.argument('pass_name', type=str, metavar='pass-name')
 @click.pass_context
 def edit(ctx, pass_name):
-    pass
+    try:
+        data = ctx.obj.get_key(pass_name)
+    except FileNotFoundError:
+        data = ''
+    except StoreNotInitialisedError:
+        click.echo(MSG_STORE_NOT_INITIALISED_ERROR)
+        return 1
+    except PermissionError:
+        click.echo(MSG_PERMISSION_ERROR)
+        return 1
+
+    editor = DEFAULT_EDITOR
+    if 'EDITOR' in os.environ:
+        editor = os.environ['EDITOR'].split()
+
+    (tmp_file, path) = tempfile.mkstemp()
+    os.write(tmp_file, bytes(data, 'utf'))
+    os.close(tmp_file)
+
+    res = subprocess.run(editor + [path], stderr=subprocess.PIPE)
+    if res.returncode != 0:
+        click.echo('Password unchanged.')
+        return 1
+
+    with open(path, 'r') as tmp_file:
+        data = tmp_file.read()
+
+    os.remove(path)
+    ctx.obj.set_key(pass_name, data, force=True)
 
 
 @cli.command(options_metavar='[ --no-symbols,-n ] [ --clip,-c ] '

@@ -74,6 +74,12 @@ class Store():
         :param bool use_agent: (optional) Set to ``True`` if you are
             using a gpg agent.
 
+        :param bool interactive: (optional) If ``True`` the user will
+            be prompted before overwriting/deleting files.
+
+        :param bool verbose: (optional) If ``True`` additional
+            information will be printed to the standard out.
+
         """
         if debug:
             lvl = logging.DEBUG
@@ -91,6 +97,9 @@ class Store():
 
         self.store_dir = os.path.normpath(os.path.expanduser(store_dir))
         self.repo = _get_git_repository(self.store_dir)
+
+        self.interactive = interactive
+        self.verbose = verbose
 
     def __iter__(self):
         return self.iter_dir('')

@@ -50,20 +50,26 @@ def _get_git_repository(path):
     return repo
 
 
-def _git_commit(repo, msg):
+def _git_commit(repo, msg, verbose=False):
     """Commit the current changes.
 
     :param repo: The repository to use.
     :type repo: :class:`git.repo.base.Repo`
 
     :param str msg: The commit message.
+
+    :param bool verbose: (optional) If ``True`` git's standard output
+        will be printed.
+
     """
     if repo is None:
         return
-    repo.git.commit(m=msg)
+    res = repo.git.commit(m=msg)
+    if verbose:
+        print(res)
 
 
-def _git_add_path(repo, path, msg, commit=True):
+def _git_add_path(repo, path, msg, commit=True, verbose=False):
     """Add a file or directory to the git repository and commit.
 
     :param repo: The git repository.  If ``None`` the function will
@@ -79,6 +85,9 @@ def _git_add_path(repo, path, msg, commit=True):
     :param bool commit: (optional) If ``True`` the added file will also
         be commited.
 
+    :param bool verbose: (optional) If ``True`` git's standard output
+        will be printed.
+
     :raises OSError: if something went wrong with adding the files.
 
     """
@@ -88,10 +97,11 @@ def _git_add_path(repo, path, msg, commit=True):
         path = [path]
     repo.git.add(*path)
     if commit:
-        _git_commit(repo, msg)
+        _git_commit(repo, msg, verbose)
 
 
-def _git_remove_path(repo, path, msg, recursive=False, commit=True):
+def _git_remove_path(repo, path, msg, recursive=False, commit=True,
+                     verbose=False):
     """Remove the file or directory at path from the repository and commit.
 
     :param repo: The git repository.  If ``None`` the function will
@@ -106,6 +116,9 @@ def _git_remove_path(repo, path, msg, recursive=False, commit=True):
     :param bool recursive: (optional) Set to ``True`` if directories
         should be removed from the repository recursively.
 
+    :param bool verbose: (optional) If ``True`` git's standard output
+        will be printed.
+
     """
     if repo is None:
         return
@@ -113,7 +126,7 @@ def _git_remove_path(repo, path, msg, recursive=False, commit=True):
         path = [path]
     repo.git.rm(*path, r=True)
     if commit:
-        _git_commit(repo, msg)
+        _git_commit(repo, msg, verbose)
 
 
 def _git_init(path):

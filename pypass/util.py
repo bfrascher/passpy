@@ -127,7 +127,8 @@ def _gen_password(length, symbols=True):
     return ''.join(rand.choice(chars) for _ in range(length))
 
 
-def _copy_move(src, dst, force=False, move=False, interactive=False):
+def _copy_move(src, dst, force=False, move=False, interactive=False,
+               verbose=False):
     """Copies/moves a file or directory recursively.
 
     This function is partially based on the `cp` function from the
@@ -146,6 +147,9 @@ def _copy_move(src, dst, force=False, move=False, interactive=False):
     :param bool interactive: If ``True`` the user will be prompted for
         every file to be overwritten.  Has no effect if `force` is
         also ``True``.
+
+    :param bool verbose: If ``True`` print the old and new filename
+        for every copied/moved file.
 
     :raises FileNotFoundError: if there exists no key or directory for
         `src`.
@@ -175,6 +179,8 @@ def _copy_move(src, dst, force=False, move=False, interactive=False):
             else:
                 raise FileExistsError('{} already exists.'.format(dst))
         operation(src, dst)
+        if verbose:
+            print('{} -> {}'.format(src, dst))
     elif os.path.isdir(src):
         if dst.startswith(src):
             raise IOError('Can\'t copy a directory into itself.')
@@ -191,6 +197,8 @@ def _copy_move(src, dst, force=False, move=False, interactive=False):
                 dstdir = os.path.join(dst, mid, d)
                 if not os.path.exists(dstdir):
                     os.mkdir(dstdir)
+                    if verbose:
+                        print('created directory {}'.format(dstdir))
 
             for f in files:
                 srcfile = os.path.join(root, f)
@@ -205,6 +213,8 @@ def _copy_move(src, dst, force=False, move=False, interactive=False):
                         raise FileExistsError('{} already exists.'
                                               .format(dstfile))
                 operation(srcfile, dstfile)
+                if verbose:
+                    print('{} -> {}'.format(srcfile, dstfile))
     else:
         raise FileNotFoundError('{} does not exist.'.format(src))
 

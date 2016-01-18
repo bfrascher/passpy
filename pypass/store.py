@@ -213,6 +213,13 @@ class Store():
                    '"' + self.gpg_bin + ' -d ' + ' '.join(self.gpg_opts) + '"')
 
     @initialised
+    def git(self, method, *args, **kwargs):
+        if method == 'init':
+            self.init_git()
+        else:
+            self.repo.git._call_process(method, *args, **kwargs)
+
+    @initialised
     @trap(1)
     def get_key(self, path):
         """Reads the data of the key at path.

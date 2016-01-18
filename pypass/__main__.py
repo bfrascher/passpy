@@ -14,13 +14,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import click
+
 import os
 import subprocess
 import sys
 import tempfile
 
-from tkinter import Tk
+import click
+import pyperclip
 
 from pypass import (
     Store,
@@ -39,15 +40,6 @@ MSG_STORE_NOT_INITIALISED_ERROR = ('You need to call {} init first.'
                                    .format(__name__))
 MSG_PERMISSION_ERROR = 'Nah-ah!'
 MSG_FILE_NOT_FOUND = 'Error: {} is not in the password store.'
-
-
-def _copy_to_clipboard_and_clear(msg):
-    widget = Tk()
-    widget.withdraw()
-    widget.clipboard_clear()
-    widget.clipboard_append(msg)
-    widget.destroy()
-    # TODO(benedikt) Delete clipboard after PYPASS_CLIP_TIME seconds
 
 
 class PassGroup(click.Group):
@@ -165,7 +157,6 @@ def ls(ctx, subfolder, passthrough=False):
         click.echo(MSG_STORE_NOT_INITIALISED_ERROR)
         return 1
 
-
 @cli.command()
 @click.argument('search_string', type=str, metavar='search-string')
 @click.pass_context
@@ -218,8 +209,8 @@ def find(ctx, pass_names):
 def show(ctx, pass_name, clip, passthrough=False):
     """Decrypt and print a password named `pass-name`.  If `--clip` or
     `-c` is specified, do not print the password but instead copy the
-    first line to the clipboard using Tkinter and then restore the
-    clipboard after 45 (or PYPASS_CLIP_TIME) seconds.
+    first line to the clipboard using pyperclip.  On Linux you will
+    need to have xclip/xsel and on OSX pbcopy/pbpaste installed.
 
     """
     try:
@@ -240,7 +231,7 @@ def show(ctx, pass_name, clip, passthrough=False):
         return 1
 
     if clip:
-        _copy_to_clipboard_and_clear(data.split('\n')[0])
+        pyperclip.copy(data.split('\n')[0])
     else:
         # The key data always ends with a newline.  So no need to add
         # another one.
@@ -363,10 +354,10 @@ def generate(ctx, pass_name, pass_length, no_symbols, clip, in_place, force):
     `pass-name`.  If `--no-symbols` or `-n` is specified, do not use
     any non-alphanumeric characters in the generated password.  If
     `--clip` or `-c` is specified, do not print the password but
-    instead copy it to the clipboard using Tkinter and then restore
-    the clipboard after 45 (or PYPASS_CLIP_TIME) seconds.  Prompt
-    before overwriting an existing password, unless `--force` or `-f`
-    is specified.  If `--in-place` or `-i` is specified, do not
+    instead copy it to the clipboard.  On Linux you will need to have
+    xclip/xsel and on OSX pbcopy/pbpaste installed.  Prompt before
+    overwriting an existing password, unless `--force` or `-f` is
+    specified.  If `--in-place` or `-i` is specified, do not
     interactively prompt, and only replace the first line of the
     password file with the new generated password, keeping the
     remainder of the file intact.
@@ -374,7 +365,8 @@ def generate(ctx, pass_name, pass_length, no_symbols, clip, in_place, force):
     """
     symbols = not no_symbols
     try:
-        password = ctx.obj.gen_key(pass_name, pass_length, symbols, force, in_place)
+        password = ctx.obj.gen_key(pass_name, pass_length, symbols,
+                                   force, in_place)
     except StoreNotInitialisedError:
         click.echo(MSG_STORE_NOT_INITIALISED_ERROR)
         return 1
@@ -383,7 +375,7 @@ def generate(ctx, pass_name, pass_length, no_symbols, clip, in_place, force):
         return 1
 
     if clip:
-        _copy_to_clipboard_and_clear(password)
+        pyperclip.copy(password)
     else:
         click.echo(password)
 
@@ -477,8 +469,9 @@ def cp(ctx, old_path, new_path, force):
 
 
 @cli.command()
+@click.argument('git_args', type=str, metavar='git-command-args', nargs=-1)
 @click.pass_context
-def git(ctx):
+def git(ctx, git_args):
     """If the password store is a git repository, pass `args` as arguments
     to `git` using the password store as the git repository.  If
     `args` is `init`, in addition to initializing the git repository,
@@ -486,7 +479,7 @@ def git(ctx):
     in an initial commit.
 
     """
-    pass
+    ctx.obj.git(*list(git_args))
 
 
 if __name__ == '__main__':

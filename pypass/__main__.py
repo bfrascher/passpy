@@ -20,6 +20,8 @@ import subprocess
 import sys
 import tempfile
 
+from tkinter import Tk
+
 from pypass import (
     Store,
     StoreNotInitialisedError
@@ -37,6 +39,15 @@ MSG_STORE_NOT_INITIALISED_ERROR = ('You need to call {} init first.'
                                    .format(__name__))
 MSG_PERMISSION_ERROR = 'Nah-ah!'
 MSG_FILE_NOT_FOUND = 'Error: {} is not in the password store.'
+
+
+def _copy_to_clipboard_and_clear(msg):
+    widget = Tk()
+    widget.withdraw()
+    widget.clipboard_clear()
+    widget.clipboard_append(msg)
+    widget.destroy()
+    # TODO(benedikt) Delete clipboard after PYPASS_CLIP_TIME seconds
 
 
 class PassGroup(click.Group):
@@ -88,7 +99,9 @@ class PassGroup(click.Group):
               'environment variable.', default=False)
 @click.pass_context
 def cli(ctx, gpg_bin, git_bin, store_dir, debug, no_agent):
-    """
+    """pypass is a password manager compatible with ZX2C4's pass written
+    in Python.
+
     """
     if debug:
         debug = True
@@ -109,7 +122,18 @@ def cli(ctx, gpg_bin, git_bin, store_dir, debug, no_agent):
 @click.pass_context
 def init(ctx, gpg_ids, path):
     """Initialize new password storage and use `gpg-id` for encryption.
-    Selectively reencrypts existing passwords using new `gpg-id`.
+    Mutliple gpg-ids may be specified, in order to encrypt each
+    password with multiple ids.  This command must be run first before
+    a password store can be used.  If the specified `gpg-id` is
+    different from the ye used in any existing files, these files will
+    be reencrypted to use the new id.  Note that use of an gpg agent
+    is recommended so that the batch decryption does not require as
+    much user intervention.  If `--path` or `-p` is specified, along
+    with an argument, a specific gpg-id or a set of gpg-ids is
+    assigned for that specific sub folder of the password store.  If
+    only the gpg-id is given, and it is an empty string then the
+    current `.gpg-id` file for the specfified `sub-folder` (or root if
+    unspecified) is removed.
 
     """
     try:
@@ -122,6 +146,10 @@ def init(ctx, gpg_ids, path):
 @click.argument('subfolder', type=str, default='.')
 @click.pass_context
 def ls(ctx, subfolder, passthrough=False):
+    """List names of passwords inside the tree at `subfolder`.  This
+    command is alternatively names `list`.
+
+    """
     # TODO(benedikt) Generate pretty output
     try:
         for key in ctx.obj.iter_dir(subfolder):
@@ -142,6 +170,11 @@ def ls(ctx, subfolder, passthrough=False):
 @click.argument('search_string', type=str, metavar='search-string')
 @click.pass_context
 def grep(ctx, search_string):
+    """Searches inside each decrypted password file for `search-string`,
+    and displays line containing matched string along with filename.
+    `search-string` can be a regular expression.
+
+    """
     try:
         results = ctx.obj.search(search_string)
     except StoreNotInitialisedError:
@@ -160,6 +193,11 @@ def grep(ctx, search_string):
 @click.argument('pass_names', type=str, nargs=-1, metavar='pass-name')
 @click.pass_context
 def find(ctx, pass_names):
+    """List names of passwords inside the tree that match `pass-names` and
+    print them to the command line.  This command is alternatively
+    named `search`.
+
+    """
     try:
         keys = ctx.obj.find(list(pass_names))
     except StoreNotInitialisedError:
@@ -178,6 +216,12 @@ def find(ctx, pass_names):
 @click.argument('pass_name', type=str, metavar='pass-name', default='.')
 @click.pass_context
 def show(ctx, pass_name, clip, passthrough=False):
+    """Decrypt and print a password named `pass-name`.  If `--clip` or
+    `-c` is specified, do not print the password but instead copy the
+    first line to the clipboard using Tkinter and then restore the
+    clipboard after 45 (or PYPASS_CLIP_TIME) seconds.
+
+    """
     try:
         data = ctx.obj.get_key(pass_name)
     # If pass_name is actually a folder in the password store pass
@@ -196,8 +240,7 @@ def show(ctx, pass_name, clip, passthrough=False):
         return 1
 
     if clip:
-        # TODO(benedikt) Copy to clipboard
-        pass
+        _copy_to_clipboard_and_clear(data.split('\n')[0])
     else:
         # The key data always ends with a newline.  So no need to add
         # another one.
@@ -215,6 +258,17 @@ def show(ctx, pass_name, clip, passthrough=False):
 @click.argument('pass_name', type=str, metavar='pass-name')
 @click.pass_context
 def insert(ctx, pass_name, input_method, force):
+    """Insert a new password into the password store called `pass-name`.
+    This will read the new password from standard in.  If `--echo` or
+    `-e` are NOT specified, disable keyboard echo when the password is
+    entered and confirm the password by asking for it twice.  If
+    `--multiline` or `-m` is specified, lines will be read until EOF
+    or Ctrl+D is reached.  Otherwise, only a single line from standard
+    in read.  Prompt before overwriting an existing password, unless
+    `--force` or `-f` is specified.  This command is alternatively
+    named `add`
+
+    """
     if input_method is None:
         input_method = 'neither'
     if input_method == 'multiline':
@@ -248,6 +302,12 @@ def insert(ctx, pass_name, input_method, force):
 @click.argument('pass_name', type=str, metavar='pass-name')
 @click.pass_context
 def edit(ctx, pass_name):
+    """Insert a new password or edit an existing password using the
+    default text editor specified by the envirnomnent variable EDITOR
+    or using vi (Linux)/Notepad (Windows)/TextEdit (OSX) as a
+    fallback.  This mode makes use of temporary files for editing.
+
+    """
     try:
         data = ctx.obj.get_key(pass_name)
     except FileNotFoundError:
@@ -299,6 +359,19 @@ def edit(ctx, pass_name):
 @click.argument('pass_length', type=int, metavar='pass-length')
 @click.pass_context
 def generate(ctx, pass_name, pass_length, no_symbols, clip, in_place, force):
+    """Generate a new password of length `pass-length` and insert into
+    `pass-name`.  If `--no-symbols` or `-n` is specified, do not use
+    any non-alphanumeric characters in the generated password.  If
+    `--clip` or `-c` is specified, do not print the password but
+    instead copy it to the clipboard using Tkinter and then restore
+    the clipboard after 45 (or PYPASS_CLIP_TIME) seconds.  Prompt
+    before overwriting an existing password, unless `--force` or `-f`
+    is specified.  If `--in-place` or `-i` is specified, do not
+    interactively prompt, and only replace the first line of the
+    password file with the new generated password, keeping the
+    remainder of the file intact.
+
+    """
     symbols = not no_symbols
     try:
         password = ctx.obj.gen_key(pass_name, pass_length, symbols, force, in_place)
@@ -310,8 +383,7 @@ def generate(ctx, pass_name, pass_length, no_symbols, clip, in_place, force):
         return 1
 
     if clip:
-        # TODO(benedikt) Copy password to the clipboard
-        pass
+        _copy_to_clipboard_and_clear(password)
     else:
         click.echo(password)
 
@@ -325,6 +397,13 @@ def generate(ctx, pass_name, pass_length, no_symbols, clip, in_place, force):
 @click.argument('pass_name', type=str, metavar='pass-name')
 @click.pass_context
 def rm(ctx, pass_name, recursive, force):
+    """Remove the password names `pass-name` from the password store.
+    This command is alternatively named `remove` or `delete`.  If
+    `--recursive` or `-r` is specified, delete pass-name recursively
+    if it is a directory.  If `--force` or `-f` is specified, do not
+    interactively prompt before removal.
+
+    """
     # TODO(benedikt) Use force option when implemented
     try:
         ctx.obj.remove_path(pass_name, recursive)
@@ -347,6 +426,14 @@ def rm(ctx, pass_name, recursive, force):
 @click.argument('new_path', type=str, metavar='old-path')
 @click.pass_context
 def mv(ctx, old_path, new_path, force):
+    """Renames the password or directory named `old-path` to `new-path`.
+    This command is alternatively named `rename`.  If `--force` or
+    `-f` is specified, silently overwrite `new-path` if it exists.  If
+    `new-path` ends in a trailing '/', it is always treated as a
+    directory.  Passwords are selectively reencrypted to the
+    corresponding keys of their new destination.
+
+    """
     try:
         ctx.obj.move_path(old_path, new_path, force)
     except StoreNotInitialisedError:
@@ -392,6 +479,13 @@ def cp(ctx, old_path, new_path, force):
 @cli.command()
 @click.pass_context
 def git(ctx):
+    """If the password store is a git repository, pass `args` as arguments
+    to `git` using the password store as the git repository.  If
+    `args` is `init`, in addition to initializing the git repository,
+    add the current contents of the password store to the repository
+    in an initial commit.
+
+    """
     pass
 
 

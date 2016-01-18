@@ -23,8 +23,6 @@ This module includes all calls to the `git wrapper`_.
 .. _git wrapper: https://github.com/gitpython-developers/GitPython/
 """
 
-import logging
-
 from git import (
     Repo,
     InvalidGitRepositoryError,
@@ -46,11 +44,9 @@ def _get_git_repository(path):
     try:
         repo = Repo(path)
     except InvalidGitRepositoryError:
-        logging.debug("'{}' is not a valid git repository."
-                          .format(path))
+        pass
     except NoSuchPathError:
-        logging.debug("'{}' is not a valid path."
-                      .format(path))
+        pass
     return repo
 
 

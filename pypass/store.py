@@ -21,7 +21,6 @@ store module
 
 """
 
-import logging
 import os
 import re
 import shutil
@@ -52,8 +51,8 @@ class Store():
     """Python implementation of ZX2C4's password store.
     """
     def __init__(self, gpg_bin='gpg2', git_bin='git',
-                 store_dir='~/.password-store', debug=False,
-                 use_agent=True, interactive=False, verbose=False):
+                 store_dir='~/.password-store', use_agent=True,
+                 interactive=False, verbose=False):
         """Creates a new Store object.
 
         :param str gpg_bin: (optional) The path to the gpg
@@ -68,9 +67,6 @@ class Store():
         :param str store_dir: (optional) The path to the password
             store.
 
-        :param bool debug: (optional) Set to ``True`` to enable
-            debugging information in logs.
-
         :param bool use_agent: (optional) Set to ``True`` if you are
             using a gpg agent.
 
@@ -81,12 +77,6 @@ class Store():
             information will be printed to the standard out.
 
         """
-        if debug:
-            lvl = logging.DEBUG
-        else:
-            lvl = logging.WARNING
-        logging.basicConfig(filename='pass.log', level=lvl)
-
         self.gpg_bin = gpg_bin
         self.git_bin = git_bin
 

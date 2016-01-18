@@ -82,29 +82,21 @@ class PassGroup(click.Group):
               help='The path to the directory to use for the '
               'password store.  Alternatively you can set the '
               'PYPASS_STORE_DIR environment variable with the path.')
-@click.option('--debug', envvar='PYPASS_DEBUG', is_flag=True,
-              help='Enables debug mode.  Alternatively you can set '
-              'the PYPASS_DEBUG environment variable.', default=False)
 @click.option('--no_agent', envvar='PYPASS_NO_AGENT', is_flag=True,
               help='Pass this along if you don\'t have an ssh agent '
               'running.  Alternatively you can set the PYPASS_NO_AGENT '
               'environment variable.', default=False)
 @click.pass_context
-def cli(ctx, gpg_bin, git_bin, store_dir, debug, no_agent):
+def cli(ctx, gpg_bin, git_bin, store_dir, no_agent):
     """pypass is a password manager compatible with ZX2C4's pass written
     in Python.
 
     """
-    if debug:
-        debug = True
-    else:
-        debug = False
-
     if no_agent:
         use_agent = False
     else:
         use_agent = True
-    ctx.obj = Store(gpg_bin, git_bin, store_dir, debug, use_agent, True, True)
+    ctx.obj = Store(gpg_bin, git_bin, store_dir, use_agent, True, True)
 
 
 @cli.command(options_metavar='[ --path,-p ]')

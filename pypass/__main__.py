@@ -184,7 +184,7 @@ def insert(ctx, pass_name, input_method, force):
                 break
         data = '\n'.join(lines)
     else:
-        echo = (input_method == 'echo')
+        echo = (input_method != 'echo')
         data = click.prompt('Enter password for {}: '.format(pass_name),
                             hide_input=True, confirmation_prompt=echo,
                             type=str)

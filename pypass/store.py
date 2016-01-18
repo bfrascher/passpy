@@ -277,7 +277,7 @@ class Store():
 
     @initialised
     @trap(1)
-    def remove_path(self, path, recursive=False):
+    def remove_path(self, path, recursive=False, force=False):
         """Removes the given key or directory from the store.
 
         :param str path: The key or directory to remove.  Use '' to
@@ -286,10 +286,18 @@ class Store():
         :param bool recursive: (optional) Set to ``True`` if nonempty
             directories should be removed.
 
+        :param bool force: (optional) If ``True`` the user will never
+            be prompted for deleting a file or directory, even if
+            :attr:`pypass.store.Store.interactive` is set.
+
         """
         key_path = os.path.join(self.store_dir, path)
         key_path = os.path.normpath(key_path)
         if os.path.isdir(key_path):
+            if self.interactive and not force:
+                answer = input('Really delete {}? [y/N] '.format(key_path))
+                if answer.lower() != 'y':
+                    return
             if recursive:
                 shutil.rmtree(key_path)
             else:
@@ -299,6 +307,10 @@ class Store():
             if not os.path.isfile(key_path):
                 raise FileNotFoundError('{} is not in the password store.'
                                         .format(path))
+            if self.interactive and not force:
+                answer = input('Really delete {}? [y/N] '.format(key_path))
+                if answer.lower() != 'y':
+                    return
             os.remove(key_path)
 
         if not os.path.exists(key_path):
@@ -388,7 +400,10 @@ class Store():
                     or new_path_full.endswith('/')):
                 new_path_full += '.gpg'
 
-        new_path_full = _copy_move(old_path_full, new_path_full, force, move)
+        new_path_full = _copy_move(old_path_full, new_path_full,
+                                   force, move, self.interactive)
+        if new_path_full is None:
+            return
 
         if os.path.exists(new_path_full):
             _reencrypt_path(new_path_full, gpg_bin=self.gpg_bin,

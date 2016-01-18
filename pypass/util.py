@@ -127,7 +127,7 @@ def _gen_password(length, symbols=True):
     return ''.join(rand.choice(chars) for _ in range(length))
 
 
-def _copy_move(src, dst, force=False, move=False):
+def _copy_move(src, dst, force=False, move=False, interactive=False):
     """Copies/moves a file or directory recursively.
 
     This function is partially based on the `cp` function from the
@@ -142,6 +142,10 @@ def _copy_move(src, dst, force=False, move=False):
 
     :param bool force: If ``True`` existing files at the destination
         will be silently overwritten.
+
+    :param bool interactive: If ``True`` the user will be prompted for
+        every file to be overwritten.  Has no effect if `force` is
+        also ``True``.
 
     :raises FileNotFoundError: if there exists no key or directory for
         `src`.
@@ -164,7 +168,12 @@ def _copy_move(src, dst, force=False, move=False):
             dst = os.path.join(dst, os.path.basename(src))
 
         if os.path.exists(dst) and not force:
-            raise FileExistsError('{} already exists.'.format(dst))
+            if interactive:
+                answer = input('Really overwrite {}? [y/N] '.format(dst))
+                if answer.lower() != 'y':
+                    return None
+            else:
+                raise FileExistsError('{} already exists.'.format(dst))
         operation(src, dst)
     elif os.path.isdir(src):
         if dst.startswith(src):
@@ -187,8 +196,14 @@ def _copy_move(src, dst, force=False, move=False):
                 srcfile = os.path.join(root, f)
                 dstfile = os.path.join(dst, mid, f)
                 if os.path.exists(dstfile) and not force:
-                    # TODO(benedikt) Find better solution to just quitting.
-                    raise FileExistsError('{} already exists.'.format(dstfile))
+                    if interactive:
+                        answer = input('Really overwrite {}? [y/N] '
+                                       .format(dstfile))
+                        if answer.lower() != 'y':
+                            continue
+                    else:
+                        raise FileExistsError('{} already exists.'
+                                              .format(dstfile))
                 operation(srcfile, dstfile)
     else:
         raise FileNotFoundError('{} does not exist.'.format(src))

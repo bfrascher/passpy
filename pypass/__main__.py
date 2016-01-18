@@ -376,7 +376,7 @@ def generate(ctx, pass_name, pass_length, no_symbols, clip, in_place, force):
 @click.option('-r', '--recursive', is_flag=True,
               help='If pass-name is a directory, also remove all '
               'it\'s contents.')
-@click.option('-f', '--force', is_flag=True,
+@click.option('-f', '--force', is_flag=True, default=False,
               help='Don\'t prompt for confirmation when removing a key.')
 @click.argument('pass_name', type=str, metavar='pass-name')
 @click.pass_context
@@ -388,9 +388,8 @@ def rm(ctx, pass_name, recursive, force):
     interactively prompt before removal.
 
     """
-    # TODO(benedikt) Use force option when implemented
     try:
-        ctx.obj.remove_path(pass_name, recursive)
+        ctx.obj.remove_path(pass_name, recursive, force)
     except StoreNotInitialisedError:
         click.echo(MSG_STORE_NOT_INITIALISED_ERROR)
         return 1

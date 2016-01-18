@@ -81,11 +81,11 @@ class PassGroup(click.Group):
               'PYPASS_STORE_DIR environment variable with the path.')
 @click.option('--debug', envvar='PYPASS_DEBUG', is_flag=True,
               help='Enables debug mode.  Alternatively you can set '
-              'the PYPASS_DEBUG environment variable.')
+              'the PYPASS_DEBUG environment variable.', default=False)
 @click.option('--no_agent', envvar='PYPASS_NO_AGENT', is_flag=True,
               help='Pass this along if you don\'t have an ssh agent '
               'running.  Alternatively you can set the PYPASS_NO_AGENT '
-              'environment variable.')
+              'environment variable.', default=False)
 @click.pass_context
 def cli(ctx, gpg_bin, git_bin, store_dir, debug, no_agent):
     """

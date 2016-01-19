@@ -67,22 +67,22 @@ class PassGroup(click.Group):
 
 
 @click.group(cls=PassGroup)
-@click.option('--gpg_bin', envvar='PYPASS_GPG_BIN', default='gpg2',
+@click.option('--gpg-bin', envvar='PYPASS_GPG_BIN', default='gpg2',
               help='The path to your gpg2 binary.  Only necessary '
               'if gpg2 is not already in your PATH.  Alternatively '
               'you can set the PYPASS_GPG_BIN environment variable '
               'with the path.')
-@click.option('--git_bin', envvar='PYPASS_GIT_BIN', default='git',
+@click.option('--git-bin', envvar='PYPASS_GIT_BIN', default='git',
               help='The path to your git binary.  Only necessary '
               'if git is not already in your PATH.  Alternatively '
               'you can set the PYPASS_GIT_BIN environment variable '
               'with the path.')
-@click.option('--store_dir', envvar='PYPASS_STORE_DIR',
+@click.option('--store-dir', envvar='PYPASS_STORE_DIR',
               default='~/.password-store',
               help='The path to the directory to use for the '
               'password store.  Alternatively you can set the '
               'PYPASS_STORE_DIR environment variable with the path.')
-@click.option('--no_agent', envvar='PYPASS_NO_AGENT', is_flag=True,
+@click.option('--no-agent', envvar='PYPASS_NO_AGENT', is_flag=True,
               help='Pass this along if you don\'t have an ssh agent '
               'running.  Alternatively you can set the PYPASS_NO_AGENT '
               'environment variable.', default=False)

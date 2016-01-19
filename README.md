@@ -4,7 +4,7 @@ pypass is a library and cli for Python 3.5, created to be compatible
 with [ZX2C4's pass](http://www.passwordstore.org/).
 
 Although it has mostly been tested under Linux and sometimes Windows,
-it should be compatible with all major platforms.
+pypass should be compatible with all major platforms.
 
 ## Installation
 

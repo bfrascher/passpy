@@ -1,4 +1,4 @@
-# pypass -- A Python implementation of ZX2C4's pass.
+# pypass --  ZX2C4's pass compatible library and cli
 # Copyright (C) 2016 Benedikt Rascher-Friesenhausen <benediktrascherfriesenhausen@gmail.com>
 
 # This program is free software: you can redistribute it and/or modify

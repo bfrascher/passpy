@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to pypass's documentation!
+pypass: ZX2C4's pass compatible library and cli
 ==================================
 
 Contents:

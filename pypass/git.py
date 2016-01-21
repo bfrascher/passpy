@@ -129,8 +129,23 @@ def git_remove_path(repo, path, msg, recursive=False, commit=True,
 
 
 def git_init(path):
+    """Create a new git repository.
+
+    :param str path: The absolute path directory to create a git
+        repository in.
+
+    :rtype: :class:`git.Repo`
+    :returns: The newly initialised git repository.
+
+    """
     return Repo.init(path)
 
 
 def git_config(repo, *args):
+    """Change the configuration of a git repository.
+
+    :param repo: The git repository to change the configuration for.
+    :type repo: :class:`git.Repo`
+
+    """
     repo.git.config(args)

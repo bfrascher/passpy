@@ -29,7 +29,7 @@ from passpy import (
 )
 
 
-if sys.platform.startswith('nt') or sys.platform.startswith('cygwin'):
+if sys.platform.startswith('win') or sys.platform.startswith('cygwin'):
     DEFAULT_EDITOR = 'Notepad'
 elif sys.platform.startswith('darwin'):
     DEFAULT_EDITOR = 'TextEdit'

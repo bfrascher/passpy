@@ -312,15 +312,13 @@ def edit(ctx, pass_name):
 
     editor = DEFAULT_EDITOR
     if 'EDITOR' in os.environ:
-        # subprocess.run needs flags and the like to be separate list
-        # entries.
-        editor = os.environ['EDITOR'].split()
+        editor = os.environ['EDITOR']
 
     (tmp_file, path) = tempfile.mkstemp()
     os.write(tmp_file, bytes(data, 'utf'))
     os.close(tmp_file)
 
-    res = subprocess.run(editor + [path])
+    res = subprocess.run(editor.split() + [path])
     if res.returncode != 0:
         click.echo('Password unchanged.')
         return 1

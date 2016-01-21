@@ -52,7 +52,7 @@ class PassGroup(click.Group):
             cmd_name = 'generate'
         elif cmd_name == 'add':
             cmd_name = 'insert'
-        elif cmd_name == 'remove' or cmd_name == 'delete':
+        elif cmd_name in ['remove', 'delete']:
             cmd_name = 'rm'
         elif cmd_name == 'rename':
             cmd_name = 'mv'

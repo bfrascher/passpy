@@ -43,7 +43,11 @@ MSG_FILE_NOT_FOUND = 'Error: {0} is not in the password store.'
 
 
 class PassGroup(click.Group):
+    """Custom group for command name aliases.
+    """
     def get_command(self, ctx, cmd_name):
+        """Allow aliases for commands.
+        """
         if cmd_name == 'list':
             cmd_name = 'ls'
         elif cmd_name == 'search':

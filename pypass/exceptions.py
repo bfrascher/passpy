@@ -23,4 +23,6 @@ All custom exceptions are defined in this module.
 """
 
 class StoreNotInitialisedError(FileNotFoundError):
+    """Thrown to indicate an uninitialised password store.
+    """
     pass

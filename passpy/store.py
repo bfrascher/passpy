@@ -194,7 +194,7 @@ class Store():
         """Initialise git for the password store.
 
         Silently fails if :attr:`passpy.store.Store.repo` is not
-            ``None``.
+        ``None``.
 
         """
         if self.repo is not None:

@@ -475,7 +475,3 @@ def git(ctx, git_args):
 
     """
     ctx.obj.git(*list(git_args))
-
-
-if __name__ == '__main__':
-    cli()

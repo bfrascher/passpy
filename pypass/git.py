@@ -40,13 +40,12 @@ def get_git_repository(path):
         exists.
 
     """
-    repo = None
     try:
         repo = Repo(path)
     except InvalidGitRepositoryError:
-        pass
+        return None
     except NoSuchPathError:
-        pass
+        return None
     return repo
 
 

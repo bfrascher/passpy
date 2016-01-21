@@ -236,9 +236,11 @@ def ls(ctx, subfolder, passthrough=False):
     # the contents of that key.
     except FileNotFoundError:
         if not passthrough:
-            ctx.invoke(show, pass_name=subfolder, clip=False, passthrough=True)
+            return ctx.invoke(show, pass_name=subfolder, clip=False,
+                              passthrough=True)
         else:
             click.echo(MSG_FILE_NOT_FOUND.format(subfolder))
+            return 1
     except StoreNotInitialisedError:
         click.echo(MSG_STORE_NOT_INITIALISED_ERROR)
         return 1

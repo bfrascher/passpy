@@ -59,7 +59,7 @@ class PassGroup(click.Group):
         elif cmd_name == 'copy':
             cmd_name = 'cp'
 
-        # TODO(benedikt) Figure out how to make 'show' the dfault
+        # TODO(benedikt) Figure out how to make 'show' the default
         # command and pass cmd_name as the first argument.
         rv = click.Group.get_command(self, ctx, cmd_name)
         if rv is not None:
@@ -165,11 +165,15 @@ def grep(ctx, search_string):
         return 1
 
     for key in results:
-        # TODO(benedikt) Color this line
-        click.echo(key + ':')
+        click.secho(os.path.dirname(key) + os.sep, fg='blue', nl=False)
+        click.secho(os.path.basename(key), fg='blue', bold=True, nl=False)
+        click.secho(':')
         for line, match in results[key]:
-            # TODO(benedikt) Color the matched part of the line
-            click.echo(line)
+            start = match.start()
+            end = match.end()
+            click.echo(line[:start], nl=False)
+            click.secho(line[start:end], nl=False, fg='red', bold=True)
+            click.echo(line[end:])
 
 
 @cli.command()

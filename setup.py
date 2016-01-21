@@ -4,14 +4,14 @@ from setuptools import setup
 
 
 setup(
-    name='pypass',
+    name='passpy',
     version='0.9',
     description='ZX2C4\'s pass compatible Python library and cli',
-    url='https://github.com/bfrascher/pypass',
+    url='https://github.com/bfrascher/passpy',
     author='Benedikt Rascher-Friesenhausen',
-    author_email='benediktrascherfriesenhausen+pypass@gmail.com',
+    author_email='benediktrascherfriesenhausen+passpy@gmail.com',
     license='GPLv3+',
-    packages=['pypass'],
+    packages=['passpy'],
     install_requires=[
         'python-gnupg>=0.3.8',
         'GitPython>=1.0.1',
@@ -31,6 +31,6 @@ setup(
     ],
     entry_points='''
         [console_scripts]
-        pypass=pypass.__main__:cli
+        passpy=passpy.__main__:cli
     ''',
 )

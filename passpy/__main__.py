@@ -1,4 +1,4 @@
-# pypass --  ZX2C4's pass compatible library and cli
+# passpy --  ZX2C4's pass compatible library and cli
 # Copyright (C) 2016 Benedikt Rascher-Friesenhausen <benediktrascherfriesenhausen@gmail.com>
 
 # This program is free software: you can redistribute it and/or modify
@@ -23,7 +23,7 @@ import tempfile
 import click
 import pyperclip
 
-from pypass import (
+from passpy import (
     Store,
     StoreNotInitialisedError
 )
@@ -92,7 +92,7 @@ class PassGroup(click.Group):
               'environment variable.', default=False)
 @click.pass_context
 def cli(ctx, gpg_bin, git_bin, store_dir, no_agent):
-    """pypass is a password manager compatible with ZX2C4's pass written
+    """passpy is a password manager compatible with ZX2C4's pass written
     in Python.
 
     """

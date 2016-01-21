@@ -1,4 +1,4 @@
-# pypass --  ZX2C4's pass compatible library and cli
+# passpy --  ZX2C4's pass compatible library and cli
 # Copyright (C) 2016 Benedikt Rascher-Friesenhausen <benediktrascherfriesenhausen@gmail.com>
 
 # This program is free software: you can redistribute it and/or modify
@@ -98,7 +98,7 @@ def write_key(path, key_data, gpg_bin, gpg_opts):
 def _reencrypt_key(path, gpg, gpg_recipients):
     """Reencrypt a single key.
 
-    Gets called from :func:`pypass.gpg._reencrypt_path`.
+    Gets called from :func:`passpy.gpg._reencrypt_path`.
 
     :param str path: The path to a gpg encrypted file.
 

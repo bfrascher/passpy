@@ -1,4 +1,4 @@
-# pypass --  ZX2C4's pass compatible library and cli
+# passpy --  ZX2C4's pass compatible library and cli
 # Copyright (C) 2016 Benedikt Rascher-Friesenhausen <benediktrascherfriesenhausen@gmail.com>
 
 # This program is free software: you can redistribute it and/or modify
@@ -28,7 +28,7 @@ import string
 
 from functools import wraps
 
-from pypass.exceptions import (
+from passpy.exceptions import (
     StoreNotInitialisedError
 )
 
@@ -77,15 +77,15 @@ def trap(path_index):
 def initialised(func):
     """Check that the store is initialised before running.
 
-    Used as a decorator in methods for :class:`pypass.store.Store`.
+    Used as a decorator in methods for :class:`passpy.store.Store`.
 
-    :param func: A method of :class:`pypass.store.Store`.
+    :param func: A method of :class:`passpy.store.Store`.
     :type store: function
 
     :rtype: function
     :returns: The method if the store is initialised.
 
-    :raises pypass.exceptions.StoreNotInitialisedError: if the store
+    :raises passpy.exceptions.StoreNotInitialisedError: if the store
         is not initialised.
 
     """

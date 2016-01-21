@@ -1,4 +1,4 @@
-# pypass --  ZX2C4's pass compatible library and cli
+# passpy --  ZX2C4's pass compatible library and cli
 # Copyright (C) 2016 Benedikt Rascher-Friesenhausen <benediktrascherfriesenhausen@gmail.com>
 
 # This program is free software: you can redistribute it and/or modify
@@ -76,7 +76,7 @@ def git_add_path(repo, path, msg, commit=True, verbose=False):
     :type repo: :class:`git.repo.base.Repo`
 
     :param path: The path of the file or directory to commit relative
-        to :py:attr:`pypass.store.Store.store_dir`.
+        to :py:attr:`passpy.store.Store.store_dir`.
     :type path: str or list
 
     :param str msg: The commit message.

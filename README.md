@@ -1,17 +1,17 @@
-# pypass --  ZX2C4's pass compatible library and cli
+# passpy --  ZX2C4's pass compatible library and cli
 
-pypass is a library and cli for Python 3.5, created to be compatible
+passpy is a library and cli for Python 3.5, created to be compatible
 with [ZX2C4's pass](http://www.passwordstore.org/).
 
 Although it has mostly been tested under Linux and sometimes Windows,
-pypass should be compatible with all major platforms.
+passpy should be compatible with all major platforms.
 
 ## Installation
 
 ### Dependencies
 
 You will need Python 3.5 or later, as well as the following packages
-and applications to run pypass:
+and applications to run passpy:
 
 - git
 - gpg2

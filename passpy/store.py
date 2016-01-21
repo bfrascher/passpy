@@ -1,4 +1,4 @@
-# pypass --  ZX2C4's pass compatible library and cli
+# passpy --  ZX2C4's pass compatible library and cli
 # Copyright (C) 2016 Benedikt Rascher-Friesenhausen <benediktrascherfriesenhausen@gmail.com>
 
 # This program is free software: you can redistribute it and/or modify
@@ -25,7 +25,7 @@ import os
 import re
 import shutil
 
-from pypass.git import (
+from passpy.git import (
     get_git_repository,
     git_add_path,
     git_remove_path,
@@ -33,13 +33,13 @@ from pypass.git import (
     git_config
 )
 
-from pypass.gpg import (
+from passpy.gpg import (
     reencrypt_path,
     read_key,
     write_key
 )
 
-from pypass.util import (
+from passpy.util import (
     trap,
     initialised,
     gen_password,
@@ -101,7 +101,7 @@ class Store():
 
         :rtype: str
         :returns: `path` relative to
-            :attr:`pypass.store.Store.store_dir` without a leading '/'
+            :attr:`passpy.store.Store.store_dir` without a leading '/'
             and trailing '.gpg' if any.
 
         """
@@ -128,12 +128,12 @@ class Store():
 
         :param str path: (optional) If given, the gpg ids will only be
             set for the given directory.  The path is relative to
-            :attr:`pypass.store.Store.store_dir`.
+            :attr:`passpy.store.Store.store_dir`.
 
         :raises ValueError: if the there is a problem with `path`.
 
         :raises FileExistsError: if
-            :attr:`pypass.store.Store.store_dir` already exists and is
+            :attr:`passpy.store.Store.store_dir` already exists and is
             a file.
 
         :raises FileNotFoundError: if the current gpg id should be
@@ -193,7 +193,7 @@ class Store():
     def init_git(self):
         """Initialise git for the password store.
 
-        Silently fails if :attr:`pypass.store.Store.repo` is not
+        Silently fails if :attr:`passpy.store.Store.repo` is not
             ``None``.
 
         """
@@ -228,7 +228,7 @@ class Store():
         """Reads the data of the key at path.
 
         :param str path: The path to the key (without '.gpg' ending)
-            relative to :attr:`pypass.store.Store.store_dir`.
+            relative to :attr:`passpy.store.Store.store_dir`.
 
         :rtype: str
         :returns: The key data as a string or ``None``, if the key
@@ -293,7 +293,7 @@ class Store():
 
         :param bool force: (optional) If ``True`` the user will never
             be prompted for deleting a file or directory, even if
-            :attr:`pypass.store.Store.interactive` is set.
+            :attr:`passpy.store.Store.interactive` is set.
 
         """
         key_path = os.path.join(self.store_dir, path)
@@ -468,7 +468,7 @@ class Store():
         """Returns all directory and key entries for the given path.
 
         :param str path: The directory to list relative to
-            :attr:`pypass.store.Store.store_dir`
+            :attr:`passpy.store.Store.store_dir`
 
         :rtype: (list, list)
         :returns: Two lists, the first for directories, the second for

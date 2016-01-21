@@ -1,4 +1,4 @@
-# pypass --  ZX2C4's pass compatible library and cli
+# passpy --  ZX2C4's pass compatible library and cli
 # Copyright (C) 2016 Benedikt Rascher-Friesenhausen <benediktrascherfriesenhausen@gmail.com>
 
 # This program is free software: you can redistribute it and/or modify
@@ -14,11 +14,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from .exceptions import (
-    StoreNotInitialisedError
-)
-from .store import Store
-from .util import gen_password
+"""
+#################
+exceptions module
+#################
 
-__version__ = '0.9'
-VERSION = __version__
+All custom exceptions are defined in this module.
+"""
+
+class StoreNotInitialisedError(FileNotFoundError):
+    """Thrown to indicate an uninitialised password store.
+    """
+    pass

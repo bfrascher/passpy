@@ -1,4 +1,4 @@
-pypass has been created to be fully compatible with ZX2C4's pass
+passpy has been created to be fully compatible with ZX2C4's pass
 (htpps://passwordstore.org).  Therefore the code is at times a direct
 port of pass's implementation.  Especially user shown strings, like
 error messages and function explanations, have mostly been directly
@@ -8,7 +8,7 @@ The .gitignore file is taken from another project, hat can be found at
 https://raw.githubusercontent.com/github/gitignore/master/Python.gitignore
 and licensed under the MIT license.
 
-The copy_move function in pypass.util is partially based on the cp
+The copy_move function in passpy.util is partially based on the cp
 function from the pycoreutils package
 (https://pypi.python.org/pypi/pycoreutils) written by Hans van Leeuwen
 and licensed under the MIT license.

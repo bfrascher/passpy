@@ -1,22 +1,22 @@
 API Reference
 =============
 
-.. automodule:: pypass.git
+.. automodule:: passpy.git
    :members:
    :special-members:
    :private-members:
 
-.. automodule:: pypass.gpg
+.. automodule:: passpy.gpg
    :members:
    :special-members:
    :private-members:
 
-.. automodule:: pypass.store
+.. automodule:: passpy.store
    :members:
    :special-members:
    :private-members:
 
-.. automodule:: pypass.util
+.. automodule:: passpy.util
    :members:
    :special-members:
    :private-members:

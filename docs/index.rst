@@ -1,4 +1,4 @@
-pypass: ZX2C4's pass compatible library and cli
+passpy: ZX2C4's pass compatible library and cli
 ===============================================
 
 Contents:

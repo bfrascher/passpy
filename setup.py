@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-from distutils.core import setup
+from setuptools import setup
+
 
 setup(
     name='pypass',
@@ -12,10 +13,10 @@ setup(
     license='GPLv3+',
     packages=['pypass'],
     install_requires=[
-        'python-gnupg',
-        'gitpython',
-        'pyperclip',
-        'Click',
+        'python-gnupg>=0.3.8',
+        'GitPython>=1.0.1',
+        'pyperclip>=1.5',
+        'click>=2.0',
     ],
     classifiers=[
         'Development Status :: 4 - Beta',

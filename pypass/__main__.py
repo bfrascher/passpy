@@ -36,7 +36,7 @@ elif sys.platform.startswith('darwin'):
 else:
     DEFAULT_EDITOR = 'vi'
 
-MSG_STORE_NOT_INITIALISED_ERROR = ('You need to call {} init first.'
+MSG_STORE_NOT_INITIALISED_ERROR = ('You need to call {0} init first.'
                                    .format(__name__))
 MSG_PERMISSION_ERROR = 'Nah-ah!'
 MSG_FILE_NOT_FOUND = 'Error: {} is not in the password store.'
@@ -271,7 +271,7 @@ def insert(ctx, pass_name, input_method, force):
         data = '\n'.join(lines)
     else:
         echo = (input_method != 'echo')
-        data = click.prompt('Enter password for {}: '.format(pass_name),
+        data = click.prompt('Enter password for {0}: '.format(pass_name),
                             hide_input=True, confirmation_prompt=echo,
                             type=str)
 
@@ -398,7 +398,7 @@ def rm(ctx, pass_name, recursive, force):
         click.echo(MSG_STORE_NOT_INITIALISED_ERROR)
         return 1
     except FileNotFoundError:
-        click.echo('{} is not in the password store.'.format(pass_name))
+        click.echo('{0} is not in the password store.'.format(pass_name))
         return 1
     except PermissionError:
         click.echo(MSG_PERMISSION_ERROR)
@@ -427,7 +427,7 @@ def mv(ctx, old_path, new_path, force):
         click.echo(MSG_STORE_NOT_INITIALISED_ERROR)
         return 1
     except FileNotFoundError:
-        click.echo('{} is not in the password store.'.format(old_path))
+        click.echo('{0} is not in the password store.'.format(old_path))
         return 1
     except PermissionError:
         click.echo(MSG_PERMISSION_ERROR)
@@ -456,7 +456,7 @@ def cp(ctx, old_path, new_path, force):
         click.echo(MSG_STORE_NOT_INITIALISED_ERROR)
         return 1
     except FileNotFoundError:
-        click.echo('{} is not in the password store.'.format(old_path))
+        click.echo('{0} is not in the password store.'.format(old_path))
         return 1
     except PermissionError:
         click.echo(MSG_PERMISSION_ERROR)

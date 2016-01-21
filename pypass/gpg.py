@@ -147,4 +147,4 @@ def reencrypt_path(path, gpg_bin, gpg_opts):
                 key_path = os.path.join(root, key)
                 _reencrypt_key(key_path, gpg, gpg_recipients)
     else:
-        raise FileNotFoundError('{} does not exist.'.format(path))
+        raise FileNotFoundError('{0} does not exist.'.format(path))

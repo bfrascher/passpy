@@ -173,14 +173,14 @@ def copy_move(src, dst, force=False, move=False, interactive=False,
 
         if os.path.exists(dst) and not force:
             if interactive:
-                answer = input('Really overwrite {}? [y/N] '.format(dst))
+                answer = input('Really overwrite {0}? [y/N] '.format(dst))
                 if answer.lower() != 'y':
                     return None
             else:
-                raise FileExistsError('{} already exists.'.format(dst))
+                raise FileExistsError('{0} already exists.'.format(dst))
         operation(src, dst)
         if verbose:
-            print('{} -> {}'.format(src, dst))
+            print('{0} -> {1}'.format(src, dst))
     elif os.path.isdir(src):
         if dst.startswith(src):
             raise IOError('Can\'t copy a directory into itself.')
@@ -198,24 +198,24 @@ def copy_move(src, dst, force=False, move=False, interactive=False,
                 if not os.path.exists(dstdir):
                     os.mkdir(dstdir)
                     if verbose:
-                        print('created directory {}'.format(dstdir))
+                        print('created directory {0}'.format(dstdir))
 
             for f in files:
                 srcfile = os.path.join(root, f)
                 dstfile = os.path.join(dst, mid, f)
                 if os.path.exists(dstfile) and not force:
                     if interactive:
-                        answer = input('Really overwrite {}? [y/N] '
+                        answer = input('Really overwrite {0}? [y/N] '
                                        .format(dstfile))
                         if answer.lower() != 'y':
                             continue
                     else:
-                        raise FileExistsError('{} already exists.'
+                        raise FileExistsError('{0} already exists.'
                                               .format(dstfile))
                 operation(srcfile, dstfile)
                 if verbose:
-                    print('{} -> {}'.format(srcfile, dstfile))
+                    print('{0} -> {1}'.format(srcfile, dstfile))
     else:
-        raise FileNotFoundError('{} does not exist.'.format(src))
+        raise FileNotFoundError('{0} does not exist.'.format(src))
 
     return dst

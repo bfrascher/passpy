@@ -124,7 +124,7 @@ def git_remove_path(repo, path, msg, recursive=False, commit=True,
         return
     if not isinstance(path, list):
         path = [path]
-    repo.git.rm(*path, r=True)
+    repo.git.rm(*path, r=recursive)
     if commit:
         _git_commit(repo, msg, verbose)
 

@@ -1,0 +1,4 @@
+python-gnupg>=0.3.8
+GitPython>=1.0.1
+pyperclip>=1.5
+click>=2.0

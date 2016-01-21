@@ -4,7 +4,7 @@ Overview
 pypass has been written to be a platform independent library and cli
 that is compatible with `ZX2C4's pass`_.
 
-.. _ZX2C4's pass: https://passwordstore.org
+.. _ZX2C4's pass: http://www.passwordstore.org
 
 pypass uses gpg and optionally git to save and revision your passwords
 in a simple directory tree structure.
@@ -13,6 +13,15 @@ in a simple directory tree structure.
 Installation
 ------------
 
+To install simply download the `source`_, change into the new directory and call
+
+.. _source: https://github.com/bfrascher/pypass
+
+  $ python setup.py install
+
+This will automatically install all missing Python dependencies and
+create an entry script `pypass` that acts as a shortcut for the
+command line interface component of pypass.
 
 
 Dependencies
@@ -35,8 +44,8 @@ following additional applications and python packages installed:
 
 - `click`_
 
-  .. _click: https://click.pentoo.com/...
+  .. _click: http://click.pocoo.org/
 
 - `pyperclip`_
 
-  .. _pyperclip: https://github.com/...
+  .. _pyperclip: https://github.com/asweigart/pyperclip

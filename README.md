@@ -19,10 +19,9 @@ and applications to run pypass:
 - pbcopy/pbpaste (OSX only)
 - [gitpython](https://github.com/gitpython-developers/GitPython)
 - [python-gnupg](https://bitbucket.org/vinay.sajip/python-gnupg)
-- [click](https://click.pentoo.com/...)
-- [pyperclip](https://github.com/...)
+- [click](https://click.pocoo.org/)
+- [pyperclip](https://github.com/asweigart/pyperclip)
 
 ## Usage
 
-For usage and more information, head over to the
-[pypass documentation](https://pypass.readthedocs.org).
+COMING SOON...

@@ -169,7 +169,8 @@ def grep(ctx, search_string):
         return 1
 
     for key in results:
-        click.secho(os.path.dirname(key) + os.sep, fg='blue', nl=False)
+        if os.path.dirname(key) != '':
+            click.secho(os.path.dirname(key) + os.sep, fg='blue', nl=False)
         click.secho(os.path.basename(key), fg='blue', bold=True, nl=False)
         click.secho(':')
         for line, match in results[key]:

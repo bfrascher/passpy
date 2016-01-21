@@ -1,14 +1,18 @@
 passpy has been created to be fully compatible with ZX2C4's pass
 (htpps://passwordstore.org).  Therefore the code is at times a direct
-port of pass's implementation.  Especially user shown strings, like
-error messages and function explanations, have mostly been directly
+port of pass's implementation.  Especially user shown strings like
+error messages and function explanations have mostly been directly
 copied over, with only small alterations.
 
 The .gitignore file is taken from another project, hat can be found at
 https://raw.githubusercontent.com/github/gitignore/master/Python.gitignore
-and licensed under the MIT license.
+and licensed under the MIT licence.
 
 The copy_move function in passpy.util is partially based on the cp
 function from the pycoreutils package
 (https://pypi.python.org/pypi/pycoreutils) written by Hans van Leeuwen
-and licensed under the MIT license.
+and licensed under the MIT licence.
+
+The _gen_tree function in passpy.__main__ is taken from the docktree
+package (https://github.com/cmihai/docktree) written by Mihai Ciumeică
+and licensed under the MIT licence.

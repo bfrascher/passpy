@@ -1,3 +1,5 @@
+# coding: utf-8
+
 # passpy --  ZX2C4's pass compatible library and cli
 # Copyright (C) 2016 Benedikt Rascher-Friesenhausen <benediktrascherfriesenhausen@gmail.com>
 
@@ -15,6 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
+import locale
 import os
 import subprocess
 import sys
@@ -29,6 +32,7 @@ from passpy import (
 )
 
 
+# Platform dependent constants
 if sys.platform.startswith('win') or sys.platform.startswith('cygwin'):
     DEFAULT_EDITOR = 'Notepad'
 elif sys.platform.startswith('darwin'):
@@ -36,10 +40,97 @@ elif sys.platform.startswith('darwin'):
 else:
     DEFAULT_EDITOR = 'vi'
 
+# Message constants
 MSG_STORE_NOT_INITIALISED_ERROR = ('You need to call {0} init first.'
                                    .format(__name__))
 MSG_PERMISSION_ERROR = 'Nah-ah!'
 MSG_FILE_NOT_FOUND = 'Error: {0} is not in the password store.'
+
+# Tree constants
+if locale.getdefaultlocale()[1].startswith('UTF'):
+    SPACES = '    '
+    BRIDGE = '│   '
+    BRANCH = '├── '
+    ENDING = '└── '
+else:
+    SPACES = '    '
+    BRIDGE = '|   '
+    BRANCH = '|-- '
+    ENDING = '`-- '
+
+
+def _gen_tree(lines):
+    """Create hierarchical file tree from key names.
+
+    :param list lines: A list of key names from the password store.
+
+    :rtype: dict
+    :returns: A nested dictionary with directories and key names as
+        it's keys.
+
+    """
+    tree = {}
+    for line in lines:
+        ctree = tree
+        for segment in line.split(os.sep):
+            if segment not in ctree:
+                ctree[segment] = {}
+            ctree = ctree[segment]
+
+    return tree
+
+
+def _print_name(name, num_children):
+    """Print a name with added styles.
+
+    If `num_children` is larger than nil, `name` will be printed in
+    bold face and in blue, to differentiate it as a directory and not
+    a key.
+
+    :param str name: The name to be printed.
+
+    :param int num_children: The number of children the leaf has.
+
+    """
+    # pass colors folders blue, so we do too.
+    if num_children > 0:
+        click.secho(name, bold=True, fg='blue')
+    else:
+        click.echo(name)
+
+
+def _print_tree(tree, seperators=[]):
+    """Print a depth indented listing.
+
+    The algorithm for printing the tree has been taken from `doctree`_
+    written by Mihai Ciumeică and licensed under the MIT licence.  The
+    code has been adapted to fit our needs.
+
+    .. _doctree: https://github.com/cmihai/docktree
+
+    :param dict tree: A dictionary created by
+        :func:`pypass.__main__._gen_tree`.
+
+    :param list seperators: (optional) The seperators to print before
+       the leaf name.  Leave empty when calling this function.
+
+    """
+    length = len(tree)
+    for i, entry in enumerate(sorted(tree)):
+        num_children = len(tree[entry])
+        for seperator in seperators:
+            if seperator:
+                click.echo(BRIDGE, nl=False)
+            else:
+                click.echo(SPACES, nl=False)
+        if i < length - 1:
+            click.echo(BRANCH, nl=False)
+            _print_name(entry, num_children)
+            _print_tree(tree[entry], seperators + [1])
+        else:
+            click.echo(ENDING, nl=False)
+            _print_name(entry, num_children)
+            _print_tree(tree[entry], seperators + [0])
 
 
 class PassGroup(click.Group):
@@ -140,8 +231,7 @@ def ls(ctx, subfolder, passthrough=False):
     """
     # TODO(benedikt) Generate pretty output
     try:
-        for key in ctx.obj.iter_dir(subfolder):
-            click.echo(key)
+        keys = list(ctx.obj.iter_dir(subfolder))
     # If subfolder is actually a key in the password store pass shows
     # the contents of that key.
     except FileNotFoundError:
@@ -152,6 +242,11 @@ def ls(ctx, subfolder, passthrough=False):
     except StoreNotInitialisedError:
         click.echo(MSG_STORE_NOT_INITIALISED_ERROR)
         return 1
+
+    click.echo('Password Store')
+    tree = _gen_tree(keys)
+    _print_tree(tree)
+
 
 @cli.command()
 @click.argument('search_string', type=str, metavar='search-string')
@@ -196,9 +291,9 @@ def find(ctx, pass_names):
         click.echo(MSG_STORE_NOT_INITIALISED_ERROR)
         return 1
 
-    # TODO(benedikt) Pretty up the output (tree-like?)
-    for key in keys:
-        click.echo(key)
+    click.echo('Search Terms: {0}'.format(','.join(pass_names)))
+    tree = _gen_tree(keys)
+    _print_tree(tree)
 
 
 @cli.command(options_metavar='[ --clip,-c ]')

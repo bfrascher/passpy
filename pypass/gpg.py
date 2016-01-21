@@ -57,7 +57,7 @@ def _get_gpg_recipients(path):
     return gpg_recipients
 
 
-def _read_key(path, gpg_bin, gpg_opts):
+def read_key(path, gpg_bin, gpg_opts):
     """Read and decrypt a single key file.
 
     :param str path: The path to the key to decrypt.
@@ -75,7 +75,7 @@ def _read_key(path, gpg_bin, gpg_opts):
         return str(gpg.decrypt_file(key_file))
 
 
-def _write_key(path, key_data, gpg_bin, gpg_opts):
+def write_key(path, key_data, gpg_bin, gpg_opts):
     """Encrypt and write a single key file.
 
     :param str path: The path to the key to decrypt.
@@ -116,7 +116,7 @@ def _reencrypt_key(path, gpg, gpg_recipients):
         key_file.write(key_data_enc)
 
 
-def _reencrypt_path(path, gpg_bin, gpg_opts):
+def reencrypt_path(path, gpg_bin, gpg_opts):
     """Reencrypt a single or multiple keys.
 
     If path is a directory all keys inside that directory and it's

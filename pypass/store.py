@@ -26,24 +26,24 @@ import re
 import shutil
 
 from pypass.git import (
-    _get_git_repository,
-    _git_add_path,
-    _git_remove_path,
-    _git_init,
-    _git_config
+    get_git_repository,
+    git_add_path,
+    git_remove_path,
+    git_init,
+    git_config
 )
 
 from pypass.gpg import (
-    _reencrypt_path,
-    _read_key,
-    _write_key
+    reencrypt_path,
+    read_key,
+    write_key
 )
 
 from pypass.util import (
     trap,
     initialised,
-    _gen_password,
-    _copy_move
+    gen_password,
+    copy_move
 )
 
 
@@ -86,7 +86,7 @@ class Store():
             self.gpg_opts += ['--batch', '--use-agent']
 
         self.store_dir = os.path.normpath(os.path.expanduser(store_dir))
-        self.repo = _get_git_repository(self.store_dir)
+        self.repo = get_git_repository(self.store_dir)
 
         self.interactive = interactive
         self.verbose = verbose
@@ -166,9 +166,9 @@ class Store():
                                          'cannot be removed.')
                                         .format(gpg_id_path))
             os.remove(gpg_id_path)
-            _git_remove_path(self.repo, [gpg_id_path],
-                             'Deinitialize {}.'.format(gpg_id_path),
-                             recursive=True, verbose=self.verbose)
+            git_remove_path(self.repo, [gpg_id_path],
+                            'Deinitialize {}.'.format(gpg_id_path),
+                            recursive=True, verbose=self.verbose)
             # The password store should not contain any empty directories,
             # so we try to remove as many directories as we can.  Any
             # nonempty ones will throw an error and will not be
@@ -180,14 +180,14 @@ class Store():
             with open(gpg_id_path, 'w') as gpg_id_file:
                 gpg_id_file.write('\n'.join(gpg_ids))
                 gpg_id_file.write('\n')
-            _git_add_path(self.repo, gpg_id_path, 'Set GPG id to {}.'
-                          .format(', '.join(gpg_ids)), verbose=self.verbose)
+            git_add_path(self.repo, gpg_id_path, 'Set GPG id to {}.'
+                         .format(', '.join(gpg_ids)), verbose=self.verbose)
 
-        _reencrypt_path(gpg_id_dir, gpg_bin=self.gpg_bin,
-                        gpg_opts=self.gpg_opts)
-        _git_add_path(self.repo, gpg_id_dir,
-                      'Reencrypt password store using new GPG id {}.'
-                      .format(', '.join(gpg_ids)), verbose=self.verbose)
+        reencrypt_path(gpg_id_dir, gpg_bin=self.gpg_bin,
+                       gpg_opts=self.gpg_opts)
+        git_add_path(self.repo, gpg_id_dir,
+                     'Reencrypt password store using new GPG id {}.'
+                     .format(', '.join(gpg_ids)), verbose=self.verbose)
 
     @initialised
     def init_git(self):
@@ -199,18 +199,18 @@ class Store():
         """
         if self.repo is not None:
             return
-        self.repo = _git_init(self.store_dir)
-        _git_add_path(self.repo, self.store_dir,
-                      'Add current contents of password store.',
-                      verbose=self.verbose)
+        self.repo = git_init(self.store_dir)
+        git_add_path(self.repo, self.store_dir,
+                     'Add current contents of password store.',
+                     verbose=self.verbose)
         attributes_path = os.path.join(self.store_dir, '.gitattributes')
         with open(attributes_path, 'w') as attributes_file:
             attributes_file.write('*.gpg diff=gpg\n')
-        _git_add_path(self.repo, attributes_path,
-                      'Configure git repository for gpg file diff.',
-                      verbose=self.verbose)
-        _git_config(self.repo, '--local', 'diff.gpg.binary', 'true')
-        _git_config(self.repo, '--local', 'diff.gpg.textconf',
+        git_add_path(self.repo, attributes_path,
+                     'Configure git repository for gpg file diff.',
+                     verbose=self.verbose)
+        git_config(self.repo, '--local', 'diff.gpg.binary', 'true')
+        git_config(self.repo, '--local', 'diff.gpg.textconf',
                    '"' + self.gpg_bin + ' -d ' + ' '.join(self.gpg_opts) + '"')
 
     @initialised
@@ -243,7 +243,7 @@ class Store():
 
         key_path = os.path.join(self.store_dir, path + '.gpg')
         if os.path.isfile(key_path):
-            return _read_key(key_path, self.gpg_bin, self.gpg_opts)
+            return read_key(key_path, self.gpg_bin, self.gpg_opts)
         raise FileNotFoundError('{} is not in the password store.'
                                 .format(path))
 
@@ -274,11 +274,11 @@ class Store():
                                   .format(path))
 
         os.makedirs(os.path.join(self.store_dir, key_dir), exist_ok=True)
-        _write_key(key_path, key_data, self.gpg_bin, self.gpg_opts)
+        write_key(key_path, key_data, self.gpg_bin, self.gpg_opts)
 
-        _git_add_path(self.repo, key_path,
-                      'Add given password for {} to store.'.format(path),
-                      verbose=self.verbose)
+        git_add_path(self.repo, key_path,
+                     'Add given password for {} to store.'.format(path),
+                     verbose=self.verbose)
 
     @initialised
     @trap(1)
@@ -322,9 +322,9 @@ class Store():
             print('removed {}'.format(key_path))
 
         if not os.path.exists(key_path):
-            _git_remove_path(self.repo, key_path,
-                             'Remove {} from store.'.format(path),
-                             recursive=recursive, verbose=self.verbose)
+            git_remove_path(self.repo, key_path,
+                            'Remove {} from store.'.format(path),
+                            recursive=recursive, verbose=self.verbose)
 
     @initialised
     @trap(1)
@@ -358,23 +358,23 @@ class Store():
 
         os.makedirs(os.path.join(self.store_dir, key_dir), exist_ok=True)
 
-        password = _gen_password(length, symbols=symbols)
+        password = gen_password(length, symbols=symbols)
         action = 'Add'
         if not inplace:
-            _write_key(key_path, password, self.gpg_bin, self.gpg_opts)
+            write_key(key_path, password, self.gpg_bin, self.gpg_opts)
             action = 'Add'
         else:
             action = 'Replace'
-            key_data = _read_key(key_path, gpg_bin=self.gpg_bin,
-                                 gpg_opts=self.gpg_opts)
+            key_data = read_key(key_path, gpg_bin=self.gpg_bin,
+                                gpg_opts=self.gpg_opts)
             lines = key_data.split('\n')
             lines[0] = password
-            _write_key(key_path, '\n'.join(lines), gpg_bin=self.gpg_bin,
-                       gpg_opts=self.gpg_opts)
+            write_key(key_path, '\n'.join(lines), gpg_bin=self.gpg_bin,
+                      gpg_opts=self.gpg_opts)
 
-        _git_add_path(self.repo, key_path,
-                      '{} generated password for {}.'.format(action, path),
-                      verbose=self.verbose)
+        git_add_path(self.repo, key_path,
+                     '{} generated password for {}.'.format(action, path),
+                     verbose=self.verbose)
         return password
 
     @initialised
@@ -409,27 +409,27 @@ class Store():
                     or new_path_full.endswith('/')):
                 new_path_full += '.gpg'
 
-        new_path_full = _copy_move(old_path_full, new_path_full,
-                                   force, move, self.interactive,
-                                   self.verbose)
+        new_path_full = copy_move(old_path_full, new_path_full, force,
+                                  move, self.interactive,
+                                  self.verbose)
         if new_path_full is None:
             return
 
         if os.path.exists(new_path_full):
-            _reencrypt_path(new_path_full, gpg_bin=self.gpg_bin,
-                            gpg_opts=self.gpg_opts)
+            reencrypt_path(new_path_full, gpg_bin=self.gpg_bin,
+                           gpg_opts=self.gpg_opts)
 
         action = 'Copy'
         if move:
             action = 'Rename'
             shutil.rmtree(old_path_full, ignore_errors=True)
             if not os.path.exists(old_path_full):
-                _git_remove_path(self.repo, old_path_full, '',
-                                 recursive=True, commit=False)
+                git_remove_path(self.repo, old_path_full, '',
+                                recursive=True, commit=False)
 
-        _git_add_path(self.repo, new_path_full, '{} {} to {}.'
-                      .format(action, old_path, new_path),
-                      verbose=self.verbose)
+        git_add_path(self.repo, new_path_full, '{} {} to {}.'
+                     .format(action, old_path, new_path),
+                     verbose=self.verbose)
 
 
     def copy_path(self, old_path, new_path, force=False):

@@ -30,7 +30,7 @@ from git import (
 )
 
 
-def _get_git_repository(path):
+def get_git_repository(path):
     """Get the git repository at path.
 
     :param str path: The path of a git repository to return.
@@ -69,7 +69,7 @@ def _git_commit(repo, msg, verbose=False):
         print(res)
 
 
-def _git_add_path(repo, path, msg, commit=True, verbose=False):
+def git_add_path(repo, path, msg, commit=True, verbose=False):
     """Add a file or directory to the git repository and commit.
 
     :param repo: The git repository.  If ``None`` the function will
@@ -100,8 +100,8 @@ def _git_add_path(repo, path, msg, commit=True, verbose=False):
         _git_commit(repo, msg, verbose)
 
 
-def _git_remove_path(repo, path, msg, recursive=False, commit=True,
-                     verbose=False):
+def git_remove_path(repo, path, msg, recursive=False, commit=True,
+                    verbose=False):
     """Remove the file or directory at path from the repository and commit.
 
     :param repo: The git repository.  If ``None`` the function will
@@ -129,9 +129,9 @@ def _git_remove_path(repo, path, msg, recursive=False, commit=True,
         _git_commit(repo, msg, verbose)
 
 
-def _git_init(path):
+def git_init(path):
     return Repo.init(path)
 
 
-def _git_config(repo, *args):
+def git_config(repo, *args):
     repo.git.config(args)

@@ -99,7 +99,7 @@ def initialised(func):
     return initialised_wrapper
 
 
-def _gen_password(length, symbols=True):
+def gen_password(length, symbols=True):
     """Generates a random string.
 
     Uses :class:`random.SystemRandom` if available and
@@ -127,7 +127,7 @@ def _gen_password(length, symbols=True):
     return ''.join(rand.choice(chars) for _ in range(length))
 
 
-def _copy_move(src, dst, force=False, move=False, interactive=False,
+def copy_move(src, dst, force=False, move=False, interactive=False,
                verbose=False):
     """Copies/moves a file or directory recursively.
 

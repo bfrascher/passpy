@@ -14,7 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from .store import Store
 from .exceptions import (
     StoreNotInitialisedError
 )
+from .store import Store
+from .util import gen_password

@@ -39,7 +39,7 @@ else:
 MSG_STORE_NOT_INITIALISED_ERROR = ('You need to call {0} init first.'
                                    .format(__name__))
 MSG_PERMISSION_ERROR = 'Nah-ah!'
-MSG_FILE_NOT_FOUND = 'Error: {} is not in the password store.'
+MSG_FILE_NOT_FOUND = 'Error: {0} is not in the password store.'
 
 
 class PassGroup(click.Group):
@@ -259,7 +259,7 @@ def insert(ctx, pass_name, input_method, force):
     if input_method is None:
         input_method = 'neither'
     if input_method == 'multiline':
-        click.echo('Enter contents of {} and press Ctrl+D on an empty '
+        click.echo('Enter contents of {0} and press Ctrl+D on an empty '
                     'line when finished:'.format(pass_name))
         lines = []
         while True:

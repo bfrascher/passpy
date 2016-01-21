@@ -146,7 +146,7 @@ class Store():
         if path is not None:
             path = os.path.normpath(path)
             if not os.path.isdir(path) and os.path.exists(path):
-                raise FileExistsError('{}/{} exists but is not a directory.'
+                raise FileExistsError('{0}/{1} exists but is not a directory.'
                                       .format(self.store_dir, path))
         else:
             path = self.store_dir
@@ -162,12 +162,12 @@ class Store():
         # Delete current gpg id.
         if gpg_ids is None or len(gpg_ids) == 0:
             if not os.path.isfile(gpg_id_path):
-                raise FileNotFoundError(('{} does not exist and so'
+                raise FileNotFoundError(('{0} does not exist and so'
                                          'cannot be removed.')
                                         .format(gpg_id_path))
             os.remove(gpg_id_path)
             git_remove_path(self.repo, [gpg_id_path],
-                            'Deinitialize {}.'.format(gpg_id_path),
+                            'Deinitialize {0}.'.format(gpg_id_path),
                             recursive=True, verbose=self.verbose)
             # The password store should not contain any empty directories,
             # so we try to remove as many directories as we can.  Any
@@ -180,13 +180,13 @@ class Store():
             with open(gpg_id_path, 'w') as gpg_id_file:
                 gpg_id_file.write('\n'.join(gpg_ids))
                 gpg_id_file.write('\n')
-            git_add_path(self.repo, gpg_id_path, 'Set GPG id to {}.'
+            git_add_path(self.repo, gpg_id_path, 'Set GPG id to {0}.'
                          .format(', '.join(gpg_ids)), verbose=self.verbose)
 
         reencrypt_path(gpg_id_dir, gpg_bin=self.gpg_bin,
                        gpg_opts=self.gpg_opts)
         git_add_path(self.repo, gpg_id_dir,
-                     'Reencrypt password store using new GPG id {}.'
+                     'Reencrypt password store using new GPG id {0}.'
                      .format(', '.join(gpg_ids)), verbose=self.verbose)
 
     @initialised
@@ -244,7 +244,7 @@ class Store():
         key_path = os.path.join(self.store_dir, path + '.gpg')
         if os.path.isfile(key_path):
             return read_key(key_path, self.gpg_bin, self.gpg_opts)
-        raise FileNotFoundError('{} is not in the password store.'
+        raise FileNotFoundError('{0} is not in the password store.'
                                 .format(path))
 
     @initialised
@@ -270,14 +270,14 @@ class Store():
         key_path = os.path.join(self.store_dir, path + '.gpg')
         key_dir = os.path.dirname(key_path)
         if os.path.exists(key_path) and not force:
-            raise FileExistsError('An entry already exists for {}.'
+            raise FileExistsError('An entry already exists for {0}.'
                                   .format(path))
 
         os.makedirs(os.path.join(self.store_dir, key_dir), exist_ok=True)
         write_key(key_path, key_data, self.gpg_bin, self.gpg_opts)
 
         git_add_path(self.repo, key_path,
-                     'Add given password for {} to store.'.format(path),
+                     'Add given password for {0} to store.'.format(path),
                      verbose=self.verbose)
 
     @initialised
@@ -300,7 +300,7 @@ class Store():
         key_path = os.path.normpath(key_path)
         if os.path.isdir(key_path):
             if self.interactive and not force:
-                answer = input('Really delete {}? [y/N] '.format(key_path))
+                answer = input('Really delete {0}? [y/N] '.format(key_path))
                 if answer.lower() != 'y':
                     return
             if recursive:
@@ -310,20 +310,20 @@ class Store():
         else:
             key_path += '.gpg'
             if not os.path.isfile(key_path):
-                raise FileNotFoundError('{} is not in the password store.'
+                raise FileNotFoundError('{0} is not in the password store.'
                                         .format(path))
             if self.interactive and not force:
-                answer = input('Really delete {}? [y/N] '.format(key_path))
+                answer = input('Really delete {0}? [y/N] '.format(key_path))
                 if answer.lower() != 'y':
                     return
             os.remove(key_path)
 
         if self.verbose:
-            print('removed {}'.format(key_path))
+            print('removed {0}'.format(key_path))
 
         if not os.path.exists(key_path):
             git_remove_path(self.repo, key_path,
-                            'Remove {} from store.'.format(path),
+                            'Remove {0} from store.'.format(path),
                             recursive=recursive, verbose=self.verbose)
 
     @initialised
@@ -353,7 +353,7 @@ class Store():
         key_path = os.path.join(self.store_dir, path + '.gpg')
         key_dir = os.path.dirname(key_path)
         if os.path.exists(key_path) and not (force or inplace):
-            raise FileExistsError('An entry already exists for {}.'
+            raise FileExistsError('An entry already exists for {0}.'
                                   .format(path))
 
         os.makedirs(os.path.join(self.store_dir, key_dir), exist_ok=True)
@@ -373,7 +373,7 @@ class Store():
                       gpg_opts=self.gpg_opts)
 
         git_add_path(self.repo, key_path,
-                     '{} generated password for {}.'.format(action, path),
+                     '{0} generated password for {1}.'.format(action, path),
                      verbose=self.verbose)
         return password
 
@@ -427,7 +427,7 @@ class Store():
                 git_remove_path(self.repo, old_path_full, '',
                                 recursive=True, commit=False)
 
-        git_add_path(self.repo, new_path_full, '{} {} to {}.'
+        git_add_path(self.repo, new_path_full, '{0} {1} to {2}.'
                      .format(action, old_path, new_path),
                      verbose=self.verbose)
 
@@ -481,8 +481,8 @@ class Store():
         path = os.path.normpath(path)
         path_dir = os.path.join(self.store_dir, path)
         if path is None or not os.path.isdir(path_dir):
-            raise FileNotFoundError('{} is not a directory in the password store.'
-                                    .format(path))
+            raise FileNotFoundError('{0} is not a directory in the '
+                                    'password store.'.format(path))
 
         dirs = []
         keys = []
@@ -506,8 +506,8 @@ class Store():
         path = os.path.normpath(path)
         path_dir = os.path.join(self.store_dir, path)
         if path is None or not os.path.isdir(path_dir):
-            raise FileNotFoundError('{} is not a directory in the password store.'
-                                    .format(path))
+            raise FileNotFoundError('{0} is not a directory in the '
+                                    'password store.'.format(path))
 
         # List keys in lexicographical order.
         entries = sorted(os.listdir(path_dir))

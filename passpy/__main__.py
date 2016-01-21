@@ -99,7 +99,7 @@ def _print_name(name, num_children):
         click.echo(name)
 
 
-def _print_tree(tree, seperators=[]):
+def _print_tree(tree, seperators=None):
     """Print a depth indented listing.
 
     The algorithm for printing the tree has been taken from `doctree`_
@@ -115,6 +115,9 @@ def _print_tree(tree, seperators=[]):
        the leaf name.  Leave empty when calling this function.
 
     """
+    if seperators is None:
+        seperators = []
+
     length = len(tree)
     for i, entry in enumerate(sorted(tree)):
         num_children = len(tree[entry])

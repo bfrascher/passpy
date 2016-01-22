@@ -23,6 +23,10 @@ import os
 import click
 import pyperclip
 
+from git import (
+    GitCommandError
+)
+
 from passpy import (
     Store,
     StoreNotInitialisedError,
@@ -578,4 +582,8 @@ def git(ctx, git_args):
     in an initial commit.
 
     """
-    ctx.obj.git(*list(git_args))
+    try:
+        ctx.obj.git(*list(git_args))
+    except GitCommandError as e:
+        click.echo(e)
+        return 1

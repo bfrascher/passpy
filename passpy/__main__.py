@@ -453,6 +453,9 @@ def generate(ctx, pass_name, pass_length, no_symbols, clip, in_place, force):
     except PermissionError:
         click.echo(MSG_PERMISSION_ERROR)
         return 1
+    except FileNotFoundError:
+        click.echo(MSG_FILE_NOT_FOUND.format(pass_name))
+        return 1
 
     if password is None:
         return 1

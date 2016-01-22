@@ -15,7 +15,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from .exceptions import (
-    StoreNotInitialisedError
+    StoreNotInitialisedError,
+    RecursiveCopyMoveError
 )
 from .store import Store
 from .util import gen_password

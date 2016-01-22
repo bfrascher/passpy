@@ -29,7 +29,8 @@ import string
 from functools import wraps
 
 from passpy.exceptions import (
-    StoreNotInitialisedError
+    StoreNotInitialisedError,
+    RecursiveCopyMoveError
 )
 
 
@@ -182,8 +183,9 @@ def copy_move(src, dst, force=False, move=False, interactive=False,
         if verbose:
             print('{0} -> {1}'.format(src, dst))
     elif os.path.isdir(src):
-        if dst.startswith(src):
-            raise IOError('Can\'t copy a directory into itself.')
+        if os.path.commonpath([src, dst]) == src:
+            raise RecursiveCopyMoveError('Can\'t copy or move a '
+                                         'directory into itself.')
 
         if os.path.exists(dst):
             dst = os.path.join(dst, os.path.basename(src))

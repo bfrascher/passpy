@@ -23,6 +23,13 @@ All custom exceptions are defined in this module.
 """
 
 class StoreNotInitialisedError(FileNotFoundError):
-    """Thrown to indicate an uninitialised password store.
+    """Raised to indicate an uninitialised password store.
     """
     pass
+
+
+class RecursiveCopyMoveError(OSError):
+    """Raised when trying to copy a directory into itself or a
+       subdirectory of itself.
+
+    """

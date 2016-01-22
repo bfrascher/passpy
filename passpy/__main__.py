@@ -322,6 +322,7 @@ def show(ctx, pass_name, clip, passthrough=False):
 
     if clip:
         pyperclip.copy(data.split('\n')[0])
+        click.echo('Copied {0} to the clipboard.'.format(pass_name))
     else:
         # The key data always ends with a newline.  So no need to add
         # another one.
@@ -455,6 +456,7 @@ def generate(ctx, pass_name, pass_length, no_symbols, clip, in_place, force):
 
     if clip:
         pyperclip.copy(password)
+        click.echo('Copied {0} to the clipboard.'.format(pass_name))
     else:
         click.echo(password)
 

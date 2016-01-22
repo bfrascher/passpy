@@ -21,5 +21,5 @@ from .exceptions import (
 from .store import Store
 from .util import gen_password
 
-__version__ = '0.9'
+__version__ = '1.0'
 VERSION = __version__

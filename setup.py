@@ -5,7 +5,7 @@ from setuptools import setup
 
 setup(
     name='passpy',
-    version='0.9',
+    version='1.0rc1',
     description='ZX2C4\'s pass compatible Python library and cli',
     url='https://github.com/bfrascher/passpy',
     author='Benedikt Rascher-Friesenhausen',
@@ -26,13 +26,14 @@ setup(
         'Environment :: Console',
         'Intended Audience :: End Users/Desktop',
         'Intended Audience :: Developers',
-        'License :: GPLv3+',
+        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Operating System :: Microsoft :: Windows',
-        'Operating System :: Unix',
+        'Operating System :: POSIX :: Linux',
         'Operating System :: MacOS',
+        'Topic :: Utilities',
     ],
     entry_points='''
         [console_scripts]

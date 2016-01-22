@@ -108,7 +108,7 @@ def _print_tree(tree, seperators=None):
         seperators = []
 
     length = len(tree)
-    for i, entry in enumerate(sorted(tree)):
+    for i, entry in enumerate(sorted(tree, key=str.lower)):
         num_children = len(tree[entry])
         for seperator in seperators:
             if seperator:

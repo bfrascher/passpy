@@ -494,7 +494,7 @@ class Store():
         keys = []
 
         # We want to return the entries alphabetically sorted.
-        for entry in sorted(os.listdir(path_dir)):
+        for entry in sorted(os.listdir(path_dir), key=str.lower):
             if entry.startswith('.'):
                 continue
             entry_path = os.path.join(path_dir, entry)
@@ -516,7 +516,7 @@ class Store():
                                     'password store.'.format(path))
 
         # List keys in lexicographical order.
-        entries = sorted(os.listdir(path_dir))
+        entries = sorted(os.listdir(path_dir), key=str.lower)
         for entry in entries:
             # Ignore hidden files and directories as pass does the same.
             if entry.startswith('.'):

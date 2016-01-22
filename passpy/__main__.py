@@ -104,7 +104,7 @@ def _print_tree(tree, seperators=None):
     .. _doctree: https://github.com/cmihai/docktree
 
     :param dict tree: A dictionary created by
-        :func:`pypass.__main__._gen_tree`.
+        :func:`passpy.__main__._gen_tree`.
 
     :param list seperators: (optional) The seperators to print before
        the leaf name.  Leave empty when calling this function.

@@ -300,7 +300,7 @@ class Store():
         key_path = os.path.normpath(key_path)
         if os.path.isdir(key_path):
             if self.interactive and not force:
-                answer = input('Really delete {0}? [y/N] '.format(key_path))
+                answer = input('Really delete {0}? [y/N] '.format(path))
                 if answer.lower() != 'y':
                     return
             if recursive:
@@ -313,13 +313,13 @@ class Store():
                 raise FileNotFoundError('{0} is not in the password store.'
                                         .format(path))
             if self.interactive and not force:
-                answer = input('Really delete {0}? [y/N] '.format(key_path))
+                answer = input('Really delete {0}? [y/N] '.format(path))
                 if answer.lower() != 'y':
                     return
             os.remove(key_path)
 
         if self.verbose:
-            print('removed {0}'.format(key_path))
+            print('removed {0}'.format(path))
 
         if not os.path.exists(key_path):
             git_remove_path(self.repo, key_path,

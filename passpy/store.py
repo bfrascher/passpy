@@ -525,14 +525,13 @@ class Store():
             entry_path_rel = os.path.relpath(entry_path, self.store_dir)
             if os.path.isdir(entry_path):
                 yield from self.iter_dir(entry_path_rel)
-            else:
-                # pass also shows files that do not end on .gpg in
-                # it's overview, but will throw an error if trying to
-                # access these files.  As this would make it harder to
-                # automatically iterate over the keys in the store, we
-                # just show files, that (probably) are in the store.
-                if entry.endswith('.gpg'):
-                    yield entry_path_rel[:-4]
+            # pass also shows files that do not end on .gpg in
+            # it's overview, but will throw an error if trying to
+            # access these files.  As this would make it harder to
+            # automatically iterate over the keys in the store, we
+            # just show files, that (probably) are in the store.
+            elif entry.endswith('.gpg'):
+                yield entry_path_rel[:-4]
 
     @initialised
     def find(self, names):

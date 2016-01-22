@@ -25,7 +25,8 @@ import pyperclip
 
 from passpy import (
     Store,
-    StoreNotInitialisedError
+    StoreNotInitialisedError,
+    RecursiveCopyMoveError
 )
 
 
@@ -34,6 +35,7 @@ MSG_STORE_NOT_INITIALISED_ERROR = ('You need to call {0} init first.'
                                    .format(__name__))
 MSG_PERMISSION_ERROR = 'Nah-ah!'
 MSG_FILE_NOT_FOUND = 'Error: {0} is not in the password store.'
+MSG_RECURSIVE_COPY_MOVE_ERROR = 'Error: Can\'t {0} a directory into itself.'
 
 # Tree constants
 if locale.getdefaultlocale()[1].startswith('UTF'):
@@ -528,6 +530,9 @@ def mv(ctx, old_path, new_path, force):
     except PermissionError:
         click.echo(MSG_PERMISSION_ERROR)
         return 1
+    except RecursiveCopyMoveError:
+        click.echo(MSG_RECURSIVE_COPY_MOVE_ERROR.format('move'))
+        return 1
 
 
 @cli.command(options_metavar='[ --force,-f ]')
@@ -556,6 +561,9 @@ def cp(ctx, old_path, new_path, force):
         return 1
     except PermissionError:
         click.echo(MSG_PERMISSION_ERROR)
+        return 1
+    except RecursiveCopyMoveError:
+        click.echo(MSG_RECURSIVE_COPY_MOVE_ERROR.format('copy'))
         return 1
 
 

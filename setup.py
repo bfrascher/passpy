@@ -18,6 +18,9 @@ setup(
         'pyperclip>=1.5',
         'click>=2.0',
     ],
+    extras_require = {
+        'color': ['colorama'],
+    },
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Console',

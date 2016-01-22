@@ -13,15 +13,6 @@
 
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-"""
-##########
-git module
-##########
-
-This module includes all calls to the `git wrapper`_.
-
-.. _git wrapper: https://github.com/gitpython-developers/GitPython/
-"""
 
 from git import (
     Repo,

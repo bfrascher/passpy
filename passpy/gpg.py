@@ -14,16 +14,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-"""
-##########
-gpg module
-##########
-
-This module includes all calls to the `gnupg wrapper`_.
-
-.. _gnupg wrapper: https://bitbucket.org/vinay.sajip/python-gnupg
-"""
-
 import os
 
 from gnupg import GPG

@@ -211,6 +211,10 @@ def init(ctx, gpg_ids, path):
         ctx.obj.init_store(list(gpg_ids), path=path)
     except PermissionError:
         click.echo(MSG_PERMISSION_ERROR)
+        return 1
+
+    click.echo('Password store initialised for {0}.'
+               .format(','.join(gpg_ids)))
 
 
 @cli.command()

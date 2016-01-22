@@ -366,7 +366,7 @@ def insert(ctx, pass_name, input_method, force):
         data = '\n'.join(lines)
     else:
         echo = (input_method != 'echo')
-        data = click.prompt('Enter password for {0}: '.format(pass_name),
+        data = click.prompt('Enter password for {0}'.format(pass_name),
                             hide_input=True, confirmation_prompt=echo,
                             type=str)
 
@@ -461,6 +461,7 @@ def generate(ctx, pass_name, pass_length, no_symbols, clip, in_place, force):
         pyperclip.copy(password)
         click.echo('Copied {0} to the clipboard.'.format(pass_name))
     else:
+        click.echo('The generated password for {0} is:'.format(pass_name))
         click.echo(password)
 
 

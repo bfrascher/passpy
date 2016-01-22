@@ -5,7 +5,7 @@ from setuptools import setup
 
 setup(
     name='passpy',
-    version='1.0rc1',
+    version='1.0rc2',
     description='ZX2C4\'s pass compatible Python library and cli',
     url='https://github.com/bfrascher/passpy',
     author='Benedikt Rascher-Friesenhausen',

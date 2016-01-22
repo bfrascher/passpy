@@ -1,4 +1,4 @@
-include LICENSE NOTICE requirements.txt README.md
+include LICENSE NOTICE requirements.txt README.rst README.md
 
 graft docs
 prune docs/_build

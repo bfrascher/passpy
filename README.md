@@ -12,7 +12,7 @@ passwords available where ever you like.
 ## Documentation
 
 The latest documentation is available at
-[readthedocs](passpy.readthedocs.org).
+[readthedocs](https://passpy.readthedocs.org).
 
 ## Installation
 

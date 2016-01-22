@@ -19,9 +19,6 @@
 
 import locale
 import os
-import subprocess
-import sys
-import tempfile
 
 import click
 import pyperclip
@@ -31,14 +28,6 @@ from passpy import (
     StoreNotInitialisedError
 )
 
-
-# Platform dependent constants
-if sys.platform.startswith('win') or sys.platform.startswith('cygwin'):
-    DEFAULT_EDITOR = 'Notepad'
-elif sys.platform.startswith('darwin'):
-    DEFAULT_EDITOR = 'TextEdit'
-else:
-    DEFAULT_EDITOR = 'vi'
 
 # Message constants
 MSG_STORE_NOT_INITIALISED_ERROR = ('You need to call {0} init first.'
@@ -394,10 +383,9 @@ def insert(ctx, pass_name, input_method, force):
 @click.argument('pass_name', type=str, metavar='pass-name')
 @click.pass_context
 def edit(ctx, pass_name):
-    """Insert a new password or edit an existing password using the
-    default text editor specified by the envirnomnent variable EDITOR
-    or using vi (Linux)/Notepad (Windows)/TextEdit (OSX) as a
-    fallback.  This mode makes use of temporary files for editing.
+    """Insert a new password or edit an existing one using the editor
+    specified by either EDITOR or VISUAL or falling back on the
+    platform default if both are not set.
 
     """
     try:
@@ -411,24 +399,16 @@ def edit(ctx, pass_name):
         click.echo(MSG_PERMISSION_ERROR)
         return 1
 
-    editor = DEFAULT_EDITOR
     if 'EDITOR' in os.environ:
-        editor = os.environ['EDITOR']
+        data = click.edit(text=data, editor=os.environ['EDITOR'])
+    else:
+        data = click.edit(text=data)
 
-    (tmp_file, path) = tempfile.mkstemp()
-    os.write(tmp_file, bytes(data, 'utf'))
-    os.close(tmp_file)
-
-    res = subprocess.run(editor.split() + [path])
-    if res.returncode != 0:
+    if data is None:
         click.echo('Password unchanged.')
         return 1
 
-    with open(path, 'r') as tmp_file:
-        data = tmp_file.read()
-
     ctx.obj.set_key(pass_name, data, force=True)
-    os.remove(path)
 
 
 @cli.command(options_metavar='[ --no-symbols,-n ] [ --clip,-c ] '

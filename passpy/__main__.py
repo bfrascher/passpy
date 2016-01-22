@@ -454,6 +454,9 @@ def generate(ctx, pass_name, pass_length, no_symbols, clip, in_place, force):
         click.echo(MSG_PERMISSION_ERROR)
         return 1
 
+    if password is None:
+        return 1
+
     if clip:
         pyperclip.copy(password)
         click.echo('Copied {0} to the clipboard.'.format(pass_name))

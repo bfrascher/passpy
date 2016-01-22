@@ -27,6 +27,8 @@ setup(
         'Intended Audience :: End Users/Desktop',
         'Intended Audience :: Developers',
         'License :: GPLv3+',
+        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Operating System :: Microsoft :: Windows',
         'Operating System :: Unix',

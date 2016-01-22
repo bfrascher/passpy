@@ -196,7 +196,7 @@ def copy_move(src, dst, force=False, move=False, interactive=False,
             mid = os.path.relpath(root, src)
 
             for d in dirs:
-                dstdir = os.path.join(dst, mid, d)
+                dstdir = os.path.normpath(os.path.join(dst, mid, d))
                 if not os.path.exists(dstdir):
                     os.mkdir(dstdir)
                     if verbose:
@@ -204,7 +204,7 @@ def copy_move(src, dst, force=False, move=False, interactive=False,
 
             for f in files:
                 srcfile = os.path.join(root, f)
-                dstfile = os.path.join(dst, mid, f)
+                dstfile = os.path.normpath(os.path.join(dst, mid, f))
                 if os.path.exists(dstfile) and not force:
                     if interactive:
                         answer = input('Really overwrite {0}? [y/N] '

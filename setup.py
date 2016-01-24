@@ -1,11 +1,21 @@
 #!/usr/bin/env python3
 
+import re
+
 from setuptools import setup
+
+
+with open('passpy/__init__.py', 'r') as init_file:
+    version = re.search(r'^__version__ = \'([.\d\w]*)\'',
+                        init_file.read(), re.MULTILINE).group(1)
+
+if version is None:
+    raise RuntimeError('Could not extract version')
 
 
 setup(
     name='passpy',
-    version='1.0rc2',
+    version=version,
     description='ZX2C4\'s pass compatible Python library and cli',
     url='https://github.com/bfrascher/passpy',
     author='Benedikt Rascher-Friesenhausen',
@@ -26,7 +36,7 @@ setup(
         'Environment :: Console',
         'Intended Audience :: End Users/Desktop',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+        'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',

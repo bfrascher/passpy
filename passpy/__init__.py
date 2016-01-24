@@ -21,5 +21,9 @@ from .exceptions import (
 from .store import Store
 from .util import gen_password
 
-__version__ = '1.0'
-VERSION = __version__
+
+__title__ = 'passpy'
+__version__ = '1.0rc2'
+__author__ = 'Benedikt Rascher-Friesenhausen'
+__license__ = 'GPLv3+'
+__copyright__ = 'Copyright 2015 Benedikt Rascher-Friesenhausen'

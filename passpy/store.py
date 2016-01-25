@@ -426,7 +426,6 @@ class Store():
         action = 'Copy'
         if move:
             action = 'Rename'
-            shutil.rmtree(old_path_full, ignore_errors=True)
             if not os.path.exists(old_path_full):
                 git_remove_path(self.repo, old_path_full, '',
                                 recursive=True, commit=False)

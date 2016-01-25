@@ -211,6 +211,9 @@ def copy_move(src, dst, force=False, move=False, interactive=False,
                 operation(srcfile, dstfile)
                 if verbose:
                     print('{0} -> {1}'.format(srcfile, dstfile))
+        # Delete remaining folders.
+        if move:
+            shutil.rmtree(src, ignore_errors=True)
     else:
         raise FileNotFoundError('{0} does not exist.'.format(src))
 

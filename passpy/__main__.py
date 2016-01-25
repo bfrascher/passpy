@@ -35,8 +35,7 @@ from passpy import (
 
 
 # Message constants
-MSG_STORE_NOT_INITIALISED_ERROR = ('You need to call {0} init first.'
-                                   .format(__name__))
+MSG_STORE_NOT_INITIALISED_ERROR = ('You need to call passpy init first.')
 MSG_PERMISSION_ERROR = 'Nah-ah!'
 MSG_FILE_NOT_FOUND = 'Error: {0} is not in the password store.'
 MSG_RECURSIVE_COPY_MOVE_ERROR = 'Error: Can\'t {0} a directory into itself.'
@@ -596,4 +595,5 @@ def git(ctx, git_args):
         click.echo('You need to call passpy git init first.')
         return 1
     except TypeError:
+        # TODO(benedikt) Show help for this command instead.
         click.echo('Usage: passpy git [OPTIONS] <command> [<args>]')

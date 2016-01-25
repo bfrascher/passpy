@@ -208,9 +208,24 @@ class Store():
 
     @initialised
     def git(self, method, *args, **kwargs):
+        """Call git directly.
+
+        :param str method: The git command to call.
+
+        :param list args: The arguments for the git command.
+
+        :param dict kwargs: A dictionary of flags to pass to git.
+
+        :raises AttributeError: if :attr:`passpy.store.Store.repo` is
+            ``None``.
+
+        """
         if method == 'init':
             self.init_git()
         else:
+            if self.repo is None:
+                raise AttributeError('You need to initialise the git '
+                                     'repository first.')
             res = self.repo.git._call_process(method, *args, **kwargs)
             if self.verbose:
                 print(res)

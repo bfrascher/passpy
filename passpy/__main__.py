@@ -581,9 +581,19 @@ def git(ctx, git_args):
     add the current contents of the password store to the repository
     in an initial commit.
 
+    Use `--` before passing along any options for git.
+
     """
     try:
         ctx.obj.git(*list(git_args))
+    except StoreNotInitialisedError:
+        click.echo(MSG_STORE_NOT_INITIALISED_ERROR)
+        return 1
     except GitCommandError as e:
         click.echo(e)
         return 1
+    except AttributeError as e:
+        click.echo('You need to call passpy git init first.')
+        return 1
+    except TypeError:
+        click.echo('Usage: passpy git [OPTIONS] <command> [<args>]')

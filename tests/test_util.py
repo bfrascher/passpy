@@ -84,18 +84,20 @@ def test_initialised(tmpdir):
     assert check_init(store)
 
 
-def test_gen_password():
+@pytest.mark.parametrize('length,symbols',[
+    (27, False),
+    (54, True),
+])
+def test_gen_password(length, symbols):
     """Test for :func:`passpy.util.gen_password`.
     """
-    password = gen_password(27, False)
-    assert len(password) == 27
-    assert string.punctuation not in password
-    assert password.lstrip(string.ascii_letters + string.digits) == ''
-
-    password = gen_password(54, True)
-    assert len(password) == 54
+    password = gen_password(length, symbols)
+    assert len(password) == length
+    if not symbols:
+        for char in string.punctuation:
+            assert char not in password
     assert password.lstrip(string.ascii_letters + string.digits
-                           + string.punctuation) == ''
+                           + string.punctuation * symbols) == ''
 
 
 class TestCopyMove:

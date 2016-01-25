@@ -206,6 +206,7 @@ class TestCopyMove:
                       interactive=True)
 
     def test_move(self, tmpdir):
+        """Test move setting."""
         foo, bar = TestCopyMove._setup_tmpdir(tmpdir)
         foo2 = tmpdir.join('foo2')
         dir2 = tmpdir.join('dir2')
@@ -222,6 +223,9 @@ class TestCopyMove:
         assert os.path.isfile(str(dir2.join('bar')))
 
     def test_recursive_error(self, tmpdir):
+        """Test raising of :class:`passpy.exceptions.RecursiveCopyMoveError`.
+
+        """
         import passpy
 
         with pytest.raises(passpy.RecursiveCopyMoveError):

@@ -180,7 +180,7 @@ def copy_move(src, dst, force=False, move=False, interactive=False,
             raise RecursiveCopyMoveError('Can\'t copy or move a '
                                          'directory into itself.')
 
-        if os.path.exists(dst):
+        if os.path.exists(dst) or dst.endswith(os.sep):
             dst = os.path.join(dst, os.path.basename(src))
         if not os.path.exists(dst):
             os.makedirs(dst, exist_ok=True)

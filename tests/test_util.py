@@ -93,89 +93,131 @@ def test_gen_password():
                            + string.punctuation) == ''
 
 
+class TestCopyMove:
+    """Tests for :func:`passpy.util.copy_move`."""
+    @staticmethod
+    def _setup_tmpdir(tmpdir):
+        """Create come initial files to copy/move."""
+        foo = tmpdir.join('foo')
+        foo.write(foo.basename, ensure=True)
 
-def test_copy_move(capsys, tmpdir):
-    """Test for :func:`passpy.util.copy_move`.
-    """
-    import passpy
+        bar = tmpdir.join('dir', 'bar')
+        bar.write(bar.basename, ensure=True)
 
-    # ==================================================
-    # file creation
-    # ==================================================
-    foo = tmpdir.join('foo')
-    foo.write(foo.basename, ensure=True)
+        return (foo, bar)
 
-    bar = tmpdir.join('bar')
-    bar.write(bar.basename, ensure=True)
+    def test_verbose(self, capsys, tmpdir):
+        """Test verbose setting."""
+        foo, bar = TestCopyMove._setup_tmpdir(tmpdir)
+        bar2 = tmpdir.join('dir', 'dir2', 'bar2')
+        bar2.ensure()
 
-    # ==================================================
-    # tests
-    # ==================================================
-    with pytest.raises(FileNotFoundError):
-        util.copy_move(str(tmpdir.join('no-such-file')),
-                       str(tmpdir.join('dst')))
+        # copy file
+        util.copy_move(str(foo), str(tmpdir.join('foo2')), verbose=True)
+        out, err = capsys.readouterr()
+        assert err == ''
+        assert out == '{0} -> {1}\n'.format(str(foo), str(tmpdir.join('foo2')))
 
-    # ==== copy/move files ====
-    assert util.copy_move(str(foo), str(tmpdir.join('foo2')))\
-        == str(tmpdir.join('foo2'))
-    assert util.copy_move(str(bar), os.path.join(str(tmpdir), 'dir/'))\
-        == str(tmpdir.join('dir/bar'))
-    assert util.copy_move(str(tmpdir.join('foo2')),
-                          str(tmpdir.join('dir/foo2')),
-                          verbose=True, move=True)\
-        == str(tmpdir.join('dir/foo2'))
+        util.copy_move(str(foo), str(tmpdir.join('foo3')), verbose=False)
+        out, err = capsys.readouterr()
+        assert err == ''
+        assert out == ''
 
-    out, err = capsys.readouterr()
-    assert out == '{0} -> {1}\n'.format(str(tmpdir.join('foo2')),
-                                        str(tmpdir.join('dir/foo2')))
+        # copy directory
+        util.copy_move(str(tmpdir.join('dir')),
+                       str(tmpdir.join('folder') + os.sep),
+                       verbose=True)
+        out, err = capsys.readouterr()
+        assert err == ''
+        out_list = out.split('\n')
+        assert len(out_list) == 4
+        assert out_list[0] == '{0} -> {1}'.format(
+            str(tmpdir.join('dir', 'dir2')),
+            str(tmpdir.join('folder', 'dir2')))
+        assert out_list[1] == '{0} -> {1}'.format(str(bar),
+            str(tmpdir.join('folder', 'bar')))
+        assert out_list[2] == '{0} -> {1}'.format(str(bar2),
+            str(tmpdir.join('folder', 'dir2', 'bar2')))
+        assert out_list[3] == ''
 
-    with pytest.raises(IOError):
-        util.copy_move(str(bar), str(tmpdir.join('dir/bar')), interactive=True)
+        util.copy_move(str(tmpdir.join('dir')),
+                       str(tmpdir.join('folder2') + os.sep),
+                       verbose=False)
+        out, err = capsys.readouterr()
+        assert err == ''
+        assert out == ''
 
-    out, err = capsys.readouterr()
-    assert out == 'Really overwrite {0}? [y/N] '.format(
-        str(tmpdir.join('dir/bar')))
+    def test_force(self, tmpdir):
+        """Test force setting."""
+        foo, bar = TestCopyMove._setup_tmpdir(tmpdir)
+        dir2 = tmpdir.join('dir2')
+        foo2 = dir2.join('foo')
+        folder = tmpdir.join('folder')
 
-    with pytest.raises(FileExistsError):
-        util.copy_move(str(bar), str(tmpdir.join('dir/bar')))
+        # copy file
+        util.copy_move(str(foo), str(foo2), force=True)
+        assert foo.read() == foo2.read()
+        assert bar.read() != foo2.read()
 
-    assert util.copy_move(str(bar), str(tmpdir.join('dir/bar')), force=True)\
-        == str(tmpdir.join('dir/bar'))
+        with pytest.raises(FileExistsError):
+            util.copy_move(str(bar), str(foo2))
 
-    with pytest.raises(passpy.RecursiveCopyMoveError):
-        util.copy_move(str(tmpdir.join('dir')), str(tmpdir.join('dir/newdir')))
+        util.copy_move(str(bar), str(foo2), force=True)
+        assert bar.read() == foo2.read()
 
+        # copy directory
+        util.copy_move(str(tmpdir.join('dir')), str(folder) + os.sep,
+                       force=True)
+        assert folder.join('dir', 'bar').read() == bar.read()
+        assert folder.join('dir', 'bar').read() != foo.read()
 
-    # ===== copy/move directories =====
-    assert util.copy_move(str(tmpdir.join('dir')), str(tmpdir.join('newdir')))\
-        == str(tmpdir.join('newdir'))
+        # Overwrite bar with foo, so that we can overwrite
+        # folder/dir/bar with foo and check.
+        util.copy_move(str(foo), str(bar), force=True)
 
-    dirls = os.listdir(str(tmpdir.join('dir')))
-    newdirls = os.listdir(str(tmpdir.join('newdir')))
-    assert len(dirls) == len(newdirls)
-    for entry in dirls:
-        assert entry in newdirls
+        with pytest.raises(FileExistsError):
+            util.copy_move(str(tmpdir.join('dir')), str(folder) + os.sep)
 
-    assert util.copy_move(str(tmpdir.join('dir')), str(tmpdir.join('newdir')))\
-        == str(tmpdir.join('newdir/dir'))
+        util.copy_move(str(tmpdir.join('dir')), str(folder) + os.sep,
+                       force=True)
+        assert folder.join('dir', 'bar').read() == foo.read()
 
-    assert util.copy_move(str(tmpdir.join('newdir')),
-                          str(tmpdir.join('folder')), verbose=True, move=True)\
-        == str(tmpdir.join('folder'))
+    def test_interactive(self, tmpdir):
+        """Test interactive setting."""
+        foo, bar = TestCopyMove._setup_tmpdir(tmpdir)
+        foo2 = tmpdir.join('foo2')
+        folder = tmpdir.join('folder')
 
-    out, err = capsys.readouterr()
-    out_list = out.split('\n')
-    assert len(out_list) == 6
-    assert out_list[0] == 'created directory {0}'.format(
-        str(tmpdir.join('folder/dir')))
-    assert out_list[5] == ''
+        # copy file
+        util.copy_move(str(foo), str(foo2), interactive=True)
+        with pytest.raises(IOError):
+            util.copy_move(str(foo), str(foo2), interactive=True)
 
-    with pytest.raises(IOError):
-        util.copy_move(str(tmpdir.join('dir')), str(tmpdir.join('folder')),
+        # copy directory
+        util.copy_move(str(tmpdir.join('dir')), str(folder) + os.sep,
+                       interactive=True)
+        with pytest.raises(IOError):
+            util.copy_move(str(tmpdir.join('dir')), str(folder) + os.sep,
                        interactive=True)
 
-    with pytest.raises(FileExistsError):
-        util.copy_move(str(tmpdir.join('dir')), str(tmpdir.join('folder')))
+    def test_move(self, tmpdir):
+        foo, bar = TestCopyMove._setup_tmpdir(tmpdir)
+        foo2 = tmpdir.join('foo2')
+        dir2 = tmpdir.join('dir2')
 
-    assert util.copy_move(str(tmpdir.join('dir')), str(tmpdir.join('folder')),
-                          force=True) == str(tmpdir.join('folder/dir'))
+        # copy file
+        util.copy_move(str(foo), str(foo2), move=True)
+        assert not os.path.exists(str(foo))
+        assert os.path.exists(str(foo2))
+
+        # copy directory
+        util.copy_move(str(tmpdir.join('dir')), str(dir2), move=True)
+        assert not os.path.exists(str(tmpdir.join('dir')))
+        assert os.path.isdir(str(dir2))
+        assert os.path.isfile(str(dir2.join('bar')))
+
+    def test_recursive_error(self, tmpdir):
+        import passpy
+
+        with pytest.raises(passpy.RecursiveCopyMoveError):
+            util.copy_move(str(tmpdir), str(tmpdir.join('dir')))

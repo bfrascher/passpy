@@ -397,10 +397,15 @@ class Store():
             instead.
 
         """
+        # Remember trailing '/' as normpath deletes it.
+        suffix = ''
+        if new_path.endswith(os.sep):
+            suffix = os.sep
+
         old_path = os.path.normpath(old_path)
         new_path = os.path.normpath(new_path)
         old_path_full = os.path.join(self.store_dir, old_path)
-        new_path_full = os.path.join(self.store_dir, new_path)
+        new_path_full = os.path.join(self.store_dir, new_path) + suffix
 
         if not os.path.isdir(old_path_full):
             old_path_full += '.gpg'

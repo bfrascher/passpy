@@ -18,10 +18,15 @@ import os
 import pytest
 import string
 
-import passpy.util as util
+from passpy.util import (
+    trap,
+    initialised,
+    gen_password,
+    copy_move,
+)
 
 
-@util.trap(0)
+@trap(0)
 def trapped_args(path):
     """Dummy function for testing :func:`passpy.util.trap` (args
     version).
@@ -30,7 +35,7 @@ def trapped_args(path):
     return True
 
 
-@util.trap('path')
+@trap('path')
 def trapped_kwargs(path=''):
     """Dummy function for testing :func:`passpy.util.trap` (kwargs
     version).
@@ -39,7 +44,7 @@ def trapped_kwargs(path=''):
     return True
 
 
-@util.initialised
+@initialised
 def check_init(store):
     """Dummy function for testing :func:`passpy.util.initialised`."""
     return True
@@ -82,12 +87,12 @@ def test_initialised(tmpdir):
 def test_gen_password():
     """Test for :func:`passpy.util.gen_password`.
     """
-    password = util.gen_password(27, False)
+    password = gen_password(27, False)
     assert len(password) == 27
     assert string.punctuation not in password
     assert password.lstrip(string.ascii_letters + string.digits) == ''
 
-    password = util.gen_password(54, True)
+    password = gen_password(54, True)
     assert len(password) == 54
     assert password.lstrip(string.ascii_letters + string.digits
                            + string.punctuation) == ''
@@ -113,20 +118,20 @@ class TestCopyMove:
         bar2.ensure()
 
         # copy file
-        util.copy_move(str(foo), str(tmpdir.join('foo2')), verbose=True)
+        copy_move(str(foo), str(tmpdir.join('foo2')), verbose=True)
         out, err = capsys.readouterr()
         assert err == ''
         assert out == '{0} -> {1}\n'.format(str(foo), str(tmpdir.join('foo2')))
 
-        util.copy_move(str(foo), str(tmpdir.join('foo3')), verbose=False)
+        copy_move(str(foo), str(tmpdir.join('foo3')), verbose=False)
         out, err = capsys.readouterr()
         assert err == ''
         assert out == ''
 
         # copy directory
-        util.copy_move(str(tmpdir.join('dir')),
-                       str(tmpdir.join('folder') + os.sep),
-                       verbose=True)
+        copy_move(str(tmpdir.join('dir')),
+                  str(tmpdir.join('folder') + os.sep),
+                  verbose=True)
         out, err = capsys.readouterr()
         assert err == ''
         out_list = out.split('\n')
@@ -140,9 +145,9 @@ class TestCopyMove:
             str(tmpdir.join('folder', 'dir2', 'bar2')))
         assert out_list[3] == ''
 
-        util.copy_move(str(tmpdir.join('dir')),
-                       str(tmpdir.join('folder2') + os.sep),
-                       verbose=False)
+        copy_move(str(tmpdir.join('dir')),
+                  str(tmpdir.join('folder2') + os.sep),
+                  verbose=False)
         out, err = capsys.readouterr()
         assert err == ''
         assert out == ''
@@ -155,31 +160,31 @@ class TestCopyMove:
         folder = tmpdir.join('folder')
 
         # copy file
-        util.copy_move(str(foo), str(foo2), force=True)
+        copy_move(str(foo), str(foo2), force=True)
         assert foo.read() == foo2.read()
         assert bar.read() != foo2.read()
 
         with pytest.raises(FileExistsError):
-            util.copy_move(str(bar), str(foo2))
+            copy_move(str(bar), str(foo2))
 
-        util.copy_move(str(bar), str(foo2), force=True)
+        copy_move(str(bar), str(foo2), force=True)
         assert bar.read() == foo2.read()
 
         # copy directory
-        util.copy_move(str(tmpdir.join('dir')), str(folder) + os.sep,
-                       force=True)
+        copy_move(str(tmpdir.join('dir')), str(folder) + os.sep,
+                  force=True)
         assert folder.join('dir', 'bar').read() == bar.read()
         assert folder.join('dir', 'bar').read() != foo.read()
 
         # Overwrite bar with foo, so that we can overwrite
         # folder/dir/bar with foo and check.
-        util.copy_move(str(foo), str(bar), force=True)
+        copy_move(str(foo), str(bar), force=True)
 
         with pytest.raises(FileExistsError):
-            util.copy_move(str(tmpdir.join('dir')), str(folder) + os.sep)
+            copy_move(str(tmpdir.join('dir')), str(folder) + os.sep)
 
-        util.copy_move(str(tmpdir.join('dir')), str(folder) + os.sep,
-                       force=True)
+        copy_move(str(tmpdir.join('dir')), str(folder) + os.sep,
+                  force=True)
         assert folder.join('dir', 'bar').read() == foo.read()
 
     def test_interactive(self, tmpdir):
@@ -189,16 +194,16 @@ class TestCopyMove:
         folder = tmpdir.join('folder')
 
         # copy file
-        util.copy_move(str(foo), str(foo2), interactive=True)
+        copy_move(str(foo), str(foo2), interactive=True)
         with pytest.raises(IOError):
-            util.copy_move(str(foo), str(foo2), interactive=True)
+            copy_move(str(foo), str(foo2), interactive=True)
 
         # copy directory
-        util.copy_move(str(tmpdir.join('dir')), str(folder) + os.sep,
-                       interactive=True)
+        copy_move(str(tmpdir.join('dir')), str(folder) + os.sep,
+                  interactive=True)
         with pytest.raises(IOError):
-            util.copy_move(str(tmpdir.join('dir')), str(folder) + os.sep,
-                       interactive=True)
+            copy_move(str(tmpdir.join('dir')), str(folder) + os.sep,
+                      interactive=True)
 
     def test_move(self, tmpdir):
         foo, bar = TestCopyMove._setup_tmpdir(tmpdir)
@@ -206,12 +211,12 @@ class TestCopyMove:
         dir2 = tmpdir.join('dir2')
 
         # copy file
-        util.copy_move(str(foo), str(foo2), move=True)
+        copy_move(str(foo), str(foo2), move=True)
         assert not os.path.exists(str(foo))
         assert os.path.exists(str(foo2))
 
         # copy directory
-        util.copy_move(str(tmpdir.join('dir')), str(dir2), move=True)
+        copy_move(str(tmpdir.join('dir')), str(dir2), move=True)
         assert not os.path.exists(str(tmpdir.join('dir')))
         assert os.path.isdir(str(dir2))
         assert os.path.isfile(str(dir2.join('bar')))
@@ -220,4 +225,4 @@ class TestCopyMove:
         import passpy
 
         with pytest.raises(passpy.RecursiveCopyMoveError):
-            util.copy_move(str(tmpdir), str(tmpdir.join('dir')))
+            copy_move(str(tmpdir), str(tmpdir.join('dir')))

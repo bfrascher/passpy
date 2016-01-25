@@ -94,7 +94,7 @@ def initialised(func):
 
 
 def gen_password(length, symbols=True):
-    """Generates a random string.
+    """Generate a random string.
 
     Uses :class:`random.SystemRandom` if available and
     :class:`random.Random` otherwise.
@@ -123,7 +123,7 @@ def gen_password(length, symbols=True):
 
 def copy_move(src, dst, force=False, move=False, interactive=False,
                verbose=False):
-    """Copies/moves a file or directory recursively.
+    """Copy/move a file or directory recursively.
 
     This function is partially based on the `cp` function from the
     `pycoreutils`_ package written by Hans van Leeuwen and licensed
@@ -211,7 +211,7 @@ def copy_move(src, dst, force=False, move=False, interactive=False,
                 operation(srcfile, dstfile)
                 if verbose:
                     print('{0} -> {1}'.format(srcfile, dstfile))
-        # Delete remaining folders.
+        # Delete remaining folders at src.
         if move:
             shutil.rmtree(src, ignore_errors=True)
     else:

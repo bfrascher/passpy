@@ -193,7 +193,8 @@ def copy_move(src, dst, force=False, move=False, interactive=False,
                 if not os.path.exists(dstdir):
                     os.mkdir(dstdir)
                     if verbose:
-                        print('created directory {0}'.format(dstdir))
+                        srcdir = os.path.join(root, d)
+                        print('{0} -> {1}'.format(srcdir, dstdir))
 
             for f in files:
                 srcfile = os.path.join(root, f)

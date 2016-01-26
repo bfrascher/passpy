@@ -23,20 +23,20 @@ from passpy.git import (
     git_add_path,
     git_remove_path,
     git_init,
-    git_config
+    git_config,
 )
 
 from passpy.gpg import (
     reencrypt_path,
     read_key,
-    write_key
+    write_key,
 )
 
 from passpy.util import (
     trap,
     initialised,
     gen_password,
-    copy_move
+    copy_move,
 )
 
 
@@ -85,7 +85,7 @@ class Store():
         self.verbose = verbose
 
     def __iter__(self):
-        return self.iter_dir('')
+        return self.iterate('')
 
     def _get_store_name(self, path):
         """Returns the path relative to the store.
@@ -111,7 +111,7 @@ class Store():
         return False
 
     @trap('path')
-    def init_store(self, gpg_ids, path=None):
+    def init(self, gpg_ids, path=None):
         """Initialise the password store or a subdirectory with the gpg ids.
 
         :param list gpg_ids: The list of gpg ids to encrypt the
@@ -232,7 +232,7 @@ class Store():
 
     @initialised
     @trap(1)
-    def get_key(self, path):
+    def get(self, path):
         """Reads the data of the key at path.
 
         :param str path: The path to the key (without '.gpg' ending)
@@ -257,7 +257,7 @@ class Store():
 
     @initialised
     @trap(1)
-    def set_key(self, path, key_data, force=False):
+    def set(self, path, key_data, force=False):
         """Add a key to the store or update an existing one.
 
         :param str path: The key to write.
@@ -290,7 +290,7 @@ class Store():
 
     @initialised
     @trap(1)
-    def remove_path(self, path, recursive=False, force=False):
+    def remove(self, path, recursive=False, force=False):
         """Removes the given key or directory from the store.
 
         :param str path: The key or directory to remove.  Use '' to
@@ -336,7 +336,7 @@ class Store():
 
     @initialised
     @trap(1)
-    def gen_key(self, path, length, symbols=True, force=False,
+    def gen(self, path, length, symbols=True, force=False,
                 inplace=False):
         """Generate a new password for a key.
 
@@ -394,8 +394,7 @@ class Store():
     @initialised
     @trap(1)
     @trap(2)
-    def _copy_move_path(self, old_path, new_path, force=False,
-                        move=False):
+    def _copy_move(self, old_path, new_path, force=False, move=False):
         """Copies or moves a key or directory within the password store.
 
         :param str old_path: The current path of the key or directory.
@@ -450,7 +449,7 @@ class Store():
                      verbose=self.verbose)
 
 
-    def copy_path(self, old_path, new_path, force=False):
+    def copy(self, old_path, new_path, force=False):
         """Copies a key or directory within the password store.
 
         :param str old_path: The current path of the key or directory.
@@ -463,9 +462,9 @@ class Store():
             `new_path` will be overwritten.
 
         """
-        self._copy_move_path(old_path, new_path, force, False)
+        self._copy_move(old_path, new_path, force, False)
 
-    def move_path(self, old_path, new_path, force=False):
+    def move(self, old_path, new_path, force=False):
         """Moves a key or directory within the password store.
 
         :param str old_path: The current path of the key or directory.
@@ -478,11 +477,11 @@ class Store():
             `new_path` will be overwritten.
 
         """
-        self._copy_move_path(old_path, new_path, force, True)
+        self._copy_move(old_path, new_path, force, True)
 
     @initialised
     @trap(1)
-    def list_dir(self, path):
+    def list(self, path):
         """Returns all directory and key entries for the given path.
 
         :param str path: The directory to list relative to
@@ -520,7 +519,7 @@ class Store():
 
     @initialised
     @trap(1)
-    def iter_dir(self, path):
+    def iterate(self, path):
         path = os.path.normpath(path)
         path_dir = os.path.join(self.store_dir, path)
         if path is None or not os.path.isdir(path_dir):
@@ -536,7 +535,7 @@ class Store():
             entry_path = os.path.join(path_dir, entry)
             entry_path_rel = os.path.relpath(entry_path, self.store_dir)
             if os.path.isdir(entry_path):
-                yield from self.iter_dir(entry_path_rel)
+                yield from self.iterate(entry_path_rel)
             # pass also shows files that do not end on .gpg in
             # it's overview, but will throw an error if trying to
             # access these files.  As this would make it harder to
@@ -594,7 +593,7 @@ class Store():
         regex = re.compile(term)
         results = {}
         for key in self:
-            data = self.get_key(key)
+            data = self.get(key)
             for line in data.split('\n'):
                 match = regex.search(line)
                 if match is not None:

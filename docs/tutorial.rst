@@ -135,11 +135,11 @@ be initialised in very much the same way
    >>> store.init_git()
 
 You are now ready to interact with the password store.  You can set
-and get keys using :func:`passpy.store.Store.set_key` and
-:func:`passpy.store.Store.get_key`.
-:func:`passpy.store.Store.gen_key` generates a new password for a new
+and get keys using :func:`passpy.store.Store.set` and
+:func:`passpy.store.Store.get`.
+:func:`passpy.store.Store.gen` generates a new password for a new
 or existing key.  To delete a key or directory, use
-:func:`passpy.store.Store.remove_path`.
+:func:`passpy.store.Store.remove`.
 
 For a full overview over all available methods see
 :ref:`store-module-label`.

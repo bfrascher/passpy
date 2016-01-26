@@ -80,7 +80,7 @@ def test_initialised(tmpdir):
         check_init(store)
     # As there are not other files in the tmpdir gpg will never be
     # called.  So there is no need for a real GPG ID.
-    store.init_store('dummy id')
+    store.init('dummy id')
     assert check_init(store)
 
 

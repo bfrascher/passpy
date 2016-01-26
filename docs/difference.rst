@@ -16,11 +16,11 @@ pass](http://www.passwordstore.org), there are some differences:
 - After editing a password file with an editor pass notes the used
   editor in the git commit message.  passpy uses the same message for
   updating a key, regardless if an editor was used or not.  This is
-  because for both cases :func:`passpy.store.Store.set_key` is being
+  because for both cases :func:`passpy.store.Store.set` is being
   called which also handles the git commit.
 
 - pass lists all files in the password store that do not start with a
   ``.``.  passpy only lists files that end on ``.gpg``.  The reason
   for this change is that the returned key names should be directly
-  accessible with :func:`passpy.store.Store.get_key`, which expects a
+  accessible with :func:`passpy.store.Store.get`, which expects a
   file ending on ``.gpg``.

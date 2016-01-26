@@ -24,13 +24,13 @@ import click
 import pyperclip
 
 from git import (
-    GitCommandError
+    GitCommandError,
 )
 
 from passpy import (
     Store,
     StoreNotInitialisedError,
-    RecursiveCopyMoveError
+    RecursiveCopyMoveError,
 )
 
 
@@ -213,7 +213,7 @@ def init(ctx, gpg_ids, path):
 
     """
     try:
-        ctx.obj.init_store(list(gpg_ids), path=path)
+        ctx.obj.init(list(gpg_ids), path=path)
     except PermissionError:
         click.echo(MSG_PERMISSION_ERROR)
         return 1
@@ -232,7 +232,7 @@ def ls(ctx, subfolder, passthrough=False):
     """
     # TODO(benedikt) Generate pretty output
     try:
-        keys = list(ctx.obj.iter_dir(subfolder))
+        keys = list(ctx.obj.iterate(subfolder))
     # If subfolder is actually a key in the password store pass shows
     # the contents of that key.
     except FileNotFoundError:
@@ -313,7 +313,7 @@ def show(ctx, pass_name, clip, passthrough=False):
 
     """
     try:
-        data = ctx.obj.get_key(pass_name)
+        data = ctx.obj.get(pass_name)
     # If pass_name is actually a folder in the password store pass
     # lists the folder instead.
     except FileNotFoundError:
@@ -380,7 +380,7 @@ def insert(ctx, pass_name, input_method, force):
                             type=str)
 
     try:
-        ctx.obj.set_key(pass_name, data, force=force)
+        ctx.obj.set(pass_name, data, force=force)
     except StoreNotInitialisedError:
         click.echo(MSG_STORE_NOT_INITIALISED_ERROR)
         return 1
@@ -399,7 +399,7 @@ def edit(ctx, pass_name):
 
     """
     try:
-        data = ctx.obj.get_key(pass_name)
+        data = ctx.obj.get(pass_name)
     except FileNotFoundError:
         data = ''
     except StoreNotInitialisedError:
@@ -418,7 +418,7 @@ def edit(ctx, pass_name):
         click.echo('Password unchanged.')
         return 1
 
-    ctx.obj.set_key(pass_name, data, force=True)
+    ctx.obj.set(pass_name, data, force=True)
 
 
 @cli.command(options_metavar='[ --no-symbols,-n ] [ --clip,-c ] '
@@ -454,8 +454,8 @@ def generate(ctx, pass_name, pass_length, no_symbols, clip, in_place, force):
     """
     symbols = not no_symbols
     try:
-        password = ctx.obj.gen_key(pass_name, pass_length, symbols,
-                                   force, in_place)
+        password = ctx.obj.gen(pass_name, pass_length, symbols, force,
+                               in_place)
     except StoreNotInitialisedError:
         click.echo(MSG_STORE_NOT_INITIALISED_ERROR)
         return 1
@@ -494,7 +494,7 @@ def rm(ctx, pass_name, recursive, force):
 
     """
     try:
-        ctx.obj.remove_path(pass_name, recursive, force)
+        ctx.obj.remove(pass_name, recursive, force)
     except StoreNotInitialisedError:
         click.echo(MSG_STORE_NOT_INITIALISED_ERROR)
         return 1
@@ -523,7 +523,7 @@ def mv(ctx, old_path, new_path, force):
 
     """
     try:
-        ctx.obj.move_path(old_path, new_path, force)
+        ctx.obj.move(old_path, new_path, force)
     except StoreNotInitialisedError:
         click.echo(MSG_STORE_NOT_INITIALISED_ERROR)
         return 1
@@ -555,7 +555,7 @@ def cp(ctx, old_path, new_path, force):
 
     """
     try:
-        ctx.obj.copy_path(old_path, new_path, force)
+        ctx.obj.copy(old_path, new_path, force)
     except StoreNotInitialisedError:
         click.echo(MSG_STORE_NOT_INITIALISED_ERROR)
         return 1

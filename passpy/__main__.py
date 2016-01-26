@@ -234,6 +234,11 @@ def ls(ctx, subfolder, passthrough=False):
     """List names of passwords inside the tree at `subfolder`.  This
     command is alternatively names `list`.
 
+    :param bool passthrough: ``True`` if :func:`passpy.__main__.ls`
+        has been invoked from :func:`passpy.__main__.show`.  Used to
+        prevent an infinte loop of ``ls`` passing to ``show`` and
+        back.
+
     """
     # TODO(benedikt) Generate pretty output
     try:
@@ -315,6 +320,11 @@ def show(ctx, pass_name, clip, passthrough=False):
     `-c` is specified, do not print the password but instead copy the
     first line to the clipboard using pyperclip.  On Linux you will
     need to have xclip/xsel and on OSX pbcopy/pbpaste installed.
+
+    :param bool passthrough: ``True`` if :func:`passpy.__main__.show`
+        has been invoked from :func:`passpy.__main__.ls`.  Used to
+        prevent an infinte loop of ``show`` passing to ``ls`` and
+        back.
 
     """
     try:

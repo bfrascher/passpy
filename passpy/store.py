@@ -154,6 +154,9 @@ class Store():
 
         # Delete current gpg id.
         if gpg_ids is None or len(gpg_ids) == 0 or gpg_ids[0] == '':
+            if path == self.store_dir:
+                raise ValueError('Can\'t delete the GPG ID of the '
+                                 'root directory.')
             if not os.path.isfile(gpg_id_path):
                 raise FileNotFoundError(('{0} does not exist and so'
                                          'cannot be removed.')

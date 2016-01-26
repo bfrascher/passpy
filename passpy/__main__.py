@@ -218,6 +218,10 @@ def init(ctx, gpg_ids, path):
     except PermissionError:
         click.echo(MSG_PERMISSION_ERROR)
         return 1
+    except ValueError:
+        click.echo('Can\'t delete the GPG ID for the password store. '
+                   'It would leave all passwords unencrypted.')
+        return 1
 
     click.echo('Password store initialised for {0}.'
                .format(','.join(gpg_ids)))

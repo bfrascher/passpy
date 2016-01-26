@@ -103,7 +103,7 @@ def test_gen_password(length, symbols):
 class TestCopyMove:
     """Tests for :func:`passpy.util.copy_move`."""
     @staticmethod
-    def _setup_tmpdir(tmpdir):
+    def setup_tmpdir(tmpdir):
         """Create come initial files to copy/move."""
         foo = tmpdir.join('foo')
         foo.write(foo.basename, ensure=True)
@@ -115,7 +115,7 @@ class TestCopyMove:
 
     def test_verbose(self, capsys, tmpdir):
         """Test verbose setting."""
-        foo, bar = TestCopyMove._setup_tmpdir(tmpdir)
+        foo, bar = TestCopyMove.setup_tmpdir(tmpdir)
         bar2 = tmpdir.join('dir', 'dir2', 'bar2')
         bar2.ensure()
 
@@ -156,7 +156,7 @@ class TestCopyMove:
 
     def test_force(self, tmpdir):
         """Test force setting."""
-        foo, bar = TestCopyMove._setup_tmpdir(tmpdir)
+        foo, bar = TestCopyMove.setup_tmpdir(tmpdir)
         dir2 = tmpdir.join('dir2')
         foo2 = dir2.join('foo')
         folder = tmpdir.join('folder')
@@ -191,7 +191,7 @@ class TestCopyMove:
 
     def test_interactive(self, tmpdir):
         """Test interactive setting."""
-        foo, bar = TestCopyMove._setup_tmpdir(tmpdir)
+        foo, bar = TestCopyMove.setup_tmpdir(tmpdir)
         foo2 = tmpdir.join('foo2')
         folder = tmpdir.join('folder')
 
@@ -209,7 +209,7 @@ class TestCopyMove:
 
     def test_move(self, tmpdir):
         """Test move setting."""
-        foo, bar = TestCopyMove._setup_tmpdir(tmpdir)
+        foo, bar = TestCopyMove.setup_tmpdir(tmpdir)
         foo2 = tmpdir.join('foo2')
         dir2 = tmpdir.join('dir2')
 

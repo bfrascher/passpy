@@ -391,8 +391,7 @@ def insert(ctx, pass_name, input_method, force):
     else:
         echo = (input_method != 'echo')
         data = click.prompt('Enter password for {0}'.format(pass_name),
-                            hide_input=True, confirmation_prompt=echo,
-                            type=str)
+                            confirmation_prompt=echo, type=str)
 
     try:
         ctx.obj.set(pass_name, data, force=force)

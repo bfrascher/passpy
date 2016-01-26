@@ -22,5 +22,10 @@ pass](http://www.passwordstore.org), there are some differences:
 - pass lists all files in the password store that do not start with a
   ``.``.  passpy only lists files that end on ``.gpg``.  The reason
   for this change is that the returned key names should be directly
-  accessible with :func:`passpy.store.Store.get`, which expects a
-  file ending on ``.gpg``.
+  accessible with :func:`passpy.store.Store.get`, which expects a file
+  ending on ``.gpg``.  Also directories that do not contain any files
+  ending on ``.gpg`` are omitted by passpy, even if they hold a
+  ``.gpg-id``.
+
+- passpy doesn't allow the deletion of the ``.gpg-id`` file in the
+  root directory.

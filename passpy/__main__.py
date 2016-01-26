@@ -36,7 +36,8 @@ from passpy import (
 
 # Message constants
 MSG_STORE_NOT_INITIALISED_ERROR = ('You need to call passpy init first.')
-MSG_PERMISSION_ERROR = 'Nah-ah!'
+MSG_PERMISSION_ERROR = ('You\'ve attempted to access a path outside of '
+                        'the password store.')
 MSG_FILE_NOT_FOUND = 'Error: {0} is not in the password store.'
 MSG_RECURSIVE_COPY_MOVE_ERROR = 'Error: Can\'t {0} a directory into itself.'
 

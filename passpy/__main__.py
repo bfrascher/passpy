@@ -240,7 +240,6 @@ def ls(ctx, subfolder, passthrough=False):
         back.
 
     """
-    # TODO(benedikt) Generate pretty output
     try:
         keys = list(ctx.obj.iterate(subfolder))
     # If subfolder is actually a key in the password store pass shows

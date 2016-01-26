@@ -80,6 +80,7 @@ Contents
    tutorial
    difference
    reference
+   changelog
 
 
 

@@ -153,7 +153,7 @@ class Store():
         gpg_id_path = os.path.join(gpg_id_dir, '.gpg-id')
 
         # Delete current gpg id.
-        if gpg_ids is None or len(gpg_ids) == 0:
+        if gpg_ids is None or len(gpg_ids) == 0 or gpg_ids[0] == '':
             if not os.path.isfile(gpg_id_path):
                 raise FileNotFoundError(('{0} does not exist and so'
                                          'cannot be removed.')
@@ -164,11 +164,15 @@ class Store():
                             recursive=True, verbose=self.verbose)
             # The password store should not contain any empty directories,
             # so we try to remove as many directories as we can.  Any
-            # nonempty ones will throw an error and will not be
-            # removed.
-            shutil.rmtree(gpg_id_dir, ignore_errors=True)
+            # nonempty ones will will not be removed.
+            try:
+                os.removedirs(gpg_id_dir)
+            except OSError:
+                # The directory wasn't empty so there is nothing more
+                # to do.
+                pass
         else:
-            os.makedirs(gpg_id_dir)
+            os.makedirs(gpg_id_dir, exist_ok=True)
             # pass needs the gpg id file to be newline terminated.
             with open(gpg_id_path, 'w') as gpg_id_file:
                 gpg_id_file.write('\n'.join(gpg_ids))
@@ -176,11 +180,12 @@ class Store():
             git_add_path(self.repo, gpg_id_path, 'Set GPG id to {0}.'
                          .format(', '.join(gpg_ids)), verbose=self.verbose)
 
-        reencrypt_path(gpg_id_dir, gpg_bin=self.gpg_bin,
-                       gpg_opts=self.gpg_opts)
-        git_add_path(self.repo, gpg_id_dir,
-                     'Reencrypt password store using new GPG id {0}.'
-                     .format(', '.join(gpg_ids)), verbose=self.verbose)
+        if os.path.exists(gpg_id_dir):
+            reencrypt_path(gpg_id_dir, gpg_bin=self.gpg_bin,
+                           gpg_opts=self.gpg_opts)
+            git_add_path(self.repo, gpg_id_dir,
+                         'Reencrypt password store using new GPG id {0}.'
+                         .format(','.join(gpg_ids)), verbose=self.verbose)
 
     @initialised
     def init_git(self):

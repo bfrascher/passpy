@@ -33,14 +33,13 @@ def _get_gpg_recipients(path):
 
     """
     while True:
+        if path is None or path == '':
+            raise FileNotFoundError(
+                'You must initialise the password store first!')
         gpg_id_path = os.path.join(path, '.gpg-id')
         if os.path.isfile(gpg_id_path):
             break;
         path = os.path.dirname(path)
-
-    if path is None or path == '':
-        raise FileNotFoundError(
-                'You must initialise the password store first!')
 
     with open(gpg_id_path) as gpg_id_file:
         gpg_recipients = [line.rstrip('\n') for line in gpg_id_file]

@@ -195,7 +195,7 @@ def cli(ctx, gpg_bin, git_bin, store_dir, no_agent):
 @cli.command(options_metavar='[ --path,-p ]')
 @click.option('-p', '--path', type=str,
               help='Only set the gpg-ids for the given subfolder.')
-@click.argument('gpg_ids', nargs=-1, metavar='gpg-id')
+@click.argument('gpg_ids', nargs=-1, metavar='gpg-id', default=None)
 @click.pass_context
 def init(ctx, gpg_ids, path):
     """Initialize new password storage and use `gpg-id` for encryption.

@@ -2,7 +2,6 @@ import pytest
 
 from passpy.gpg import (
     _get_gpg_recipients,
-    reencrypt_path,
 )
 
 

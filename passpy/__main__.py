@@ -199,7 +199,7 @@ def cli(ctx, gpg_bin, git_bin, store_dir, no_agent):
 @cli.command(options_metavar='[ --path,-p ]')
 @click.option('-p', '--path', type=str,
               help='Only set the gpg-ids for the given subfolder.')
-@click.argument('gpg_ids', nargs=-1, metavar='gpg-id', default=None)
+@click.argument('gpg-ids', nargs=-1, metavar='gpg-id', default=None)
 @click.pass_context
 def init(ctx, gpg_ids, path):
     """Initialize new password storage and use `gpg-id` for encryption.
@@ -268,7 +268,7 @@ def ls(ctx, subfolder, passthrough=False):
 
 
 @cli.command()
-@click.argument('search_string', type=str, metavar='search-string')
+@click.argument('search-string', type=str, metavar='search-string')
 @click.pass_context
 def grep(ctx, search_string):
     """Searches inside each decrypted password file for `search-string`,
@@ -296,7 +296,7 @@ def grep(ctx, search_string):
 
 
 @cli.command()
-@click.argument('pass_names', type=str, nargs=-1, metavar='pass-name')
+@click.argument('pass-names', type=str, nargs=-1, metavar='pass-name')
 @click.pass_context
 def find(ctx, pass_names):
     """List names of passwords inside the tree that match `pass-names` and
@@ -319,7 +319,7 @@ def find(ctx, pass_names):
 @click.option('-c', '--clip', is_flag=True,
               help='Copy the password to the clipboard instead of '
               'printing it to the command line.')
-@click.argument('pass_name', type=str, metavar='pass-name', default='.')
+@click.argument('pass-name', type=str, metavar='pass-name', default='.')
 @click.pass_context
 def show(ctx, pass_name, clip, passthrough=False):
     """Decrypt and print a password named `pass-name`.  If `--clip` or
@@ -367,7 +367,7 @@ def show(ctx, pass_name, clip, passthrough=False):
 @click.option('-f', '--force', is_flag=True,
               help='Any existing key at pass-name will be '
               'silently overwritten.')
-@click.argument('pass_name', type=str, metavar='pass-name')
+@click.argument('pass-name', type=str, metavar='pass-name')
 @click.pass_context
 def insert(ctx, pass_name, input_method, force):
     """Insert a new password into the password store called `pass-name`.
@@ -410,7 +410,7 @@ def insert(ctx, pass_name, input_method, force):
 
 
 @cli.command()
-@click.argument('pass_name', type=str, metavar='pass-name')
+@click.argument('pass-name', type=str, metavar='pass-name')
 @click.pass_context
 def edit(ctx, pass_name):
     """Insert a new password or edit an existing one using the editor
@@ -455,8 +455,8 @@ def edit(ctx, pass_name):
 @click.option('-f', '--force', is_flag=True,
               help='Overwrite an existing key at pass-name without '
               'prompting the user first.')
-@click.argument('pass_name', type=str, metavar='pass-name')
-@click.argument('pass_length', type=int, metavar='pass-length')
+@click.argument('pass-name', type=str, metavar='pass-name')
+@click.argument('pass-length', type=int, metavar='pass-length')
 @click.pass_context
 def generate(ctx, pass_name, pass_length, no_symbols, clip, in_place, force):
     """Generate a new password of length `pass-length` and insert into
@@ -503,7 +503,7 @@ def generate(ctx, pass_name, pass_length, no_symbols, clip, in_place, force):
               'it\'s contents.')
 @click.option('-f', '--force', is_flag=True, default=False,
               help='Don\'t prompt for confirmation when removing a key.')
-@click.argument('pass_name', type=str, metavar='pass-name')
+@click.argument('pass-name', type=str, metavar='pass-name')
 @click.pass_context
 def rm(ctx, pass_name, recursive, force):
     """Remove the password names `pass-name` from the password store.
@@ -530,8 +530,8 @@ def rm(ctx, pass_name, recursive, force):
 @click.option('-f', '--force', is_flag=True,
               help='If specified existing files at `new-path` '
               'will be silently overwritten.')
-@click.argument('old_path', type=str, metavar='old-path')
-@click.argument('new_path', type=str, metavar='old-path')
+@click.argument('old-path', type=str, metavar='old-path')
+@click.argument('new-path', type=str, metavar='old-path')
 @click.pass_context
 def mv(ctx, old_path, new_path, force):
     """Renames the password or directory named `old-path` to `new-path`.
@@ -562,8 +562,8 @@ def mv(ctx, old_path, new_path, force):
 @click.option('-f', '--force', is_flag=True,
               help='If specified existing files at `new-path` '
               'will be silently overwritten.')
-@click.argument('old_path', type=str, metavar='old-path')
-@click.argument('new_path', type=str, metavar='new-path')
+@click.argument('old-path', type=str, metavar='old-path')
+@click.argument('new-path', type=str, metavar='new-path')
 @click.pass_context
 def cp(ctx, old_path, new_path, force):
     """Copies the password or directory names `old-path` to `new-path`.
@@ -591,9 +591,10 @@ def cp(ctx, old_path, new_path, force):
 
 
 @cli.command()
-@click.argument('git_args', type=str, metavar='git-command-args', nargs=-1)
+@click.argument('git-command-args', type=str, metavar='git-command-args',
+                nargs=-1)
 @click.pass_context
-def git(ctx, git_args):
+def git(ctx, git_command_args):
     """If the password store is a git repository, pass `args` as arguments
     to `git` using the password store as the git repository.  If
     `args` is `init`, in addition to initializing the git repository,
@@ -604,7 +605,7 @@ def git(ctx, git_args):
 
     """
     try:
-        ctx.obj.git(*list(git_args))
+        ctx.obj.git(*list(git_command_args))
     except StoreNotInitialisedError:
         click.echo(MSG_STORE_NOT_INITIALISED_ERROR)
         return 1

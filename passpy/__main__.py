@@ -179,12 +179,14 @@ class PassGroup(click.Group):
               help='Pass this along if you don\'t have an ssh agent '
               'running.  Alternatively you can set the PASSPY_NO_AGENT '
               'environment variable.', default=False)
+@click.version_option()
 @click.pass_context
 def cli(ctx, gpg_bin, git_bin, store_dir, no_agent):
     """passpy is a password manager compatible with ZX2C4's pass written
     in Python.
 
     """
+
     if no_agent:
         use_agent = False
     else:

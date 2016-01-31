@@ -28,6 +28,7 @@ from git import (
 )
 
 from passpy import (
+    __package__,
     Store,
     StoreNotInitialisedError,
     RecursiveCopyMoveError,
@@ -35,7 +36,8 @@ from passpy import (
 
 
 # Message constants
-MSG_STORE_NOT_INITIALISED_ERROR = ('You need to call passpy init first.')
+MSG_STORE_NOT_INITIALISED_ERROR = ('You need to call {0} init first.'
+                                   .format(__package__))
 MSG_PERMISSION_ERROR = ('You\'ve attempted to access a path outside of '
                         'the password store.')
 MSG_FILE_NOT_FOUND = 'Error: {0} is not in the password store.'
@@ -610,8 +612,9 @@ def git(ctx, git_args):
         click.echo(e)
         return 1
     except AttributeError as e:
-        click.echo('You need to call passpy git init first.')
+        click.echo('You need to call {0} git init first.'.format(__package__))
         return 1
     except TypeError:
         # TODO(benedikt) Show help for this command instead.
-        click.echo('Usage: passpy git [OPTIONS] <command> [<args>]')
+        click.echo('Usage: {0} git [OPTIONS] <command> [<args>]'
+                   .format(__package__))

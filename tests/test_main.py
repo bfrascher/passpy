@@ -103,13 +103,61 @@ class TestInsert:
         assert lines[2] == ''
 
     def test_insert(self, runner, store):
-        key_data = 'This is a password for key\n'
+        key_data = 'This is a password for key'
         result = run(runner, store, 'insert', '--echo', 'key',
-                     input=key_data)
+                     input=key_data + '\n')
         lines = result.output.split('\n')
         assert len(lines) == 2
-        assert lines[0] == 'Enter password for key: This is a password for key'
+        assert lines[0] == 'Enter password for key: ' + key_data
         assert lines[1] == ''
 
         result = run(runner, store, 'show', 'key')
-        assert result.output == key_data
+        assert result.output == key_data + '\n'
+
+        key_data = 'Another password for a key'
+        result = run(runner, store, 'insert', 'dir/key',
+                     input=key_data + '\n' + key_data + '\n')
+        result = run(runner, store, 'show', 'dir/key')
+        assert result.output == key_data + '\n'
+
+        key_data = 'Final password'
+        result = run(runner, store, 'insert', '--echo', 'dir/final',
+                     input=key_data + '\n')
+        result = run(runner, store, 'show', 'dir/final')
+        assert result.output == key_data + '\n'
+
+    def test_force(self, runner, store):
+        key_data = 'This is a password for key'
+        run(runner, store, 'insert', '--echo', 'key',
+            input=key_data + '\n')
+
+        key_data = 'This is the new password'
+        result = run(runner, store, 'insert', '--echo', 'key',
+                     input=key_data + '\n' + 'n\n')
+        lines = result.output.split('\n')
+        assert len(lines) == 2
+        assert lines[1] == 'Really overwrite {0}? [y/N] '.format(
+            str(store.join('key')))
+
+        result = run(runner, store, 'show', 'key')
+        assert result.output != key_data + '\n'
+
+        run(runner, store, 'insert', '--echo', '--force', 'key',
+            input=key_data + '\n')
+        result = run(runner, store, 'show', 'key')
+        assert result.output == key_data + '\n'
+
+    def test_multiline(self, runner, store):
+        key_data = 'This is\na multiline\n password for\nkey'
+        run(runner, store, 'insert', 'key', '--multiline', input=key_data)
+
+        result = run(runner, store, 'show', 'key')
+        assert result.output == key_data + '\n'
+
+    def test_alias(self, runner, store):
+        result = run(runner, store, 'add')
+        lines = result.output.split('\n')
+        # As we call __main__.cli directly it's name will be used
+        # instead of passpy.
+        assert lines[0] == ('Usage: cli add [ --echo,-e | --multiline,-m ]'
+                            ' [ --force,-f ] pass-name')

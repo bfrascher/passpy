@@ -286,8 +286,13 @@ class Store():
         key_path = os.path.join(self.store_dir, path + '.gpg')
         key_dir = os.path.dirname(key_path)
         if os.path.exists(key_path) and not force:
-            raise FileExistsError('An entry already exists for {0}.'
-                                  .format(path))
+            if self.interactive:
+                answer = input('Really overwrite {0}? [y/N] '.format(key_path))
+                if answer.lower() != 'y':
+                    return
+            else:
+                raise FileExistsError('An entry already exists for {0}.'
+                                      .format(path))
 
         os.makedirs(os.path.join(self.store_dir, key_dir), exist_ok=True)
         write_key(key_path, key_data, self.gpg_bin, self.gpg_opts)

@@ -287,7 +287,8 @@ class Store():
         key_dir = os.path.dirname(key_path)
         if os.path.exists(key_path) and not force:
             if self.interactive:
-                answer = input('Really overwrite {0}? [y/N] '.format(key_path))
+                answer = input('Really overwrite {0}? [y/N] '
+                               .format(key_path[:-4]))
                 if answer.lower() != 'y':
                     return
             else:

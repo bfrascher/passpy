@@ -160,16 +160,17 @@ form or update an existing password file.
 Some users might want to store additional information for a store
 entry, like a websites URL, the username and so on.  There are many
 methods to do this, some of which are listed under `Data Organization`
-on the website for [ZX2C4's pass](http://www.passwordstore.org).  The
-authors preferred way to do this (both for pass and passpy) is to have
-additional lines under the first one with a leading keyword.  An entry
-might look like this::
+on the website for `ZX2C4's pass`_.  The authors preferred way to do
+this (both for pass and passpy) is to have additional lines under the
+first one with a leading keyword.  An entry might look like this::
 
   z.Rw6$`U=2MZs(i9\>-r
   URL: accounts.google.com/*
   Username: somegoogleuser@gmail.com
 
   Chrome Sync Password: EK6zzRo4chejRBztuVUF3CvqvRg9E4
+
+.. _ZX2C4's pass: https://www.passwordstore.org
 
 Of course, as said in the beginning of the section, how you organise
 your data is completely up to you and this is just one way of doing

@@ -44,8 +44,8 @@ class Store():
     """Python implementation of ZX2C4's password store.
     """
     def __init__(self, gpg_bin='gpg2', git_bin='git',
-                 store_dir='~/.password-store', use_agent=True,
-                 interactive=False, verbose=False):
+                 store_dir=os.getenv('PASSWORD_STORE_DIR', '~/.password-store'),
+                 use_agent=True, interactive=False, verbose=False):
         """Creates a new Store object.
 
         :param str gpg_bin: (optional) The path to the gpg

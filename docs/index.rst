@@ -70,6 +70,19 @@ you will additionally need to install `colorama`_.
 
 .. _colorama: https://github.com/tartley/colorama
 
+Changelog
+---------
+
+1.0.1
+~~~~~
+
+- Fix documentation.
+
+1.0.0
+~~~~~
+
+- Read the default password store location from the `PASSWORD_STORE_DIR`
+  environment variable, just like `pass` does (contributed by Jonathan Waldrep).
 
 Contents
 ========

@@ -61,3 +61,14 @@ The following Python packages will be installed alongside passpy:
 If you are on Windows and want colourised output on the command line,
 you will additionally need to install
 [colorama](https://github.com/tartley/colorama).
+
+## Changelog
+
+### 1.0.1
+
+- Fix documentation.
+
+### 1.0.0
+
+- Read the default password store location from the `PASSWORD_STORE_DIR`
+  environment variable, just like `pass` does (contributed by Jonathan Waldrep).

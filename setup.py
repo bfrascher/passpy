@@ -9,7 +9,7 @@ with open("README.md", "r") as f:
 
 setup(
     name='passpy',
-    version='1.0.0',
+    version='1.0.1',
     description='ZX2C4\'s pass compatible Python library and cli',
     long_description=long_description,
     long_description_content_type='text/markdown',

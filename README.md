@@ -3,11 +3,11 @@
 passpy has been written to be a platform independent library and cli
 that is compatible with [ZX2C4's pass](http://www.passwordstore.org).
 
-passpy saves your passwords in gpg encrypted files and optionally uses
-git as a revision tool.  All files are stored inside
-`~/.password-store` (or any other location) and can be organised into
-folders.  You can also just copy the whole store to have your
-passwords available where ever you like.
+passpy saves your passwords in gpg encrypted files and optionally uses git as a
+revision tool.  All files are stored inside the directory given by the
+`PASSWORD_STORE_DIR` environment variable (`~/.password-store` if not set) and
+can be organised into folders.  You can also just copy the whole store to have
+your passwords available where ever you like.
 
 ## Documentation
 

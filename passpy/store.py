@@ -58,7 +58,7 @@ class Store():
             already.
 
         :param str store_dir: (optional) The path to the password store.  Will
-            use the value of the `PASSWORD_STORE_DIR` environment variable by
+            use the value of the PASSWORD_STORE_DIR environment variable by
             default, or `~/.password-store`, if not set.
 
         :param bool use_agent: (optional) Set to ``True`` if you are

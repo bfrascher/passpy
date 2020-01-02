@@ -3,10 +3,16 @@
 from setuptools import setup
 
 
+with open("README.md", "r") as f:
+    long_description = f.read()
+
+
 setup(
     name='passpy',
     version='1.0.0',
     description='ZX2C4\'s pass compatible Python library and cli',
+    long_description=long_description,
+    long_description_content_type='text/markdown',
     url='https://github.com/bfrascher/passpy',
     author='Benedikt Rascher-Friesenhausen',
     author_email='benediktrascherfriesenhausen+passpy@gmail.com',

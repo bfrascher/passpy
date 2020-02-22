@@ -170,7 +170,7 @@ class PassGroup(click.Group):
               'if git is not already in your PATH.  Alternatively '
               'you can set the PYPASS_GIT_BIN environment variable '
               'with the path.')
-@click.option('--store-dir', envvar='PYPASS_STORE_DIR',
+@click.option('--store-dir', envvar=['PYPASS_STORE_DIR', 'PASSWORD_STORE_DIR'],
               default='~/.password-store',
               help='The path to the directory to use for the '
               'password store.  Alternatively you can set the '

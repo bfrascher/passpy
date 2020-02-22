@@ -137,21 +137,21 @@ class Store():
             can't be created.
 
         """
-        if path is not None:
-            path = os.path.normpath(path)
-            if not os.path.isdir(path) and os.path.exists(path):
-                raise FileExistsError('{0}/{1} exists but is not a directory.'
-                                      .format(self.store_dir, path))
-        else:
+        if path is None:
             path = self.store_dir
+        else:
+            path = os.path.normpath(os.path.join(self.store_dir, path))
+
+        if os.path.exists(path):
+            if not os.path.isdir(path):
+                raise FileExistsError('{0} exists but is not a directory.'.format(path))
 
         # Ensure that gpg_ids is a list so that the later .join does
         # not accidentally join single letters of a string.
         if gpg_ids is not None and not isinstance(gpg_ids, list):
             gpg_ids = [gpg_ids]
 
-        gpg_id_dir = os.path.join(self.store_dir, path)
-        gpg_id_path = os.path.join(gpg_id_dir, '.gpg-id')
+        gpg_id_path = os.path.join(path, '.gpg-id')
 
         # Delete current gpg id.
         if gpg_ids is None or len(gpg_ids) == 0:
@@ -167,9 +167,9 @@ class Store():
             # so we try to remove as many directories as we can.  Any
             # nonempty ones will throw an error and will not be
             # removed.
-            shutil.rmtree(gpg_id_dir, ignore_errors=True)
+            shutil.rmtree(path, ignore_errors=True)
         else:
-            os.makedirs(gpg_id_dir)
+            os.makedirs(path)
             # pass needs the gpg id file to be newline terminated.
             with open(gpg_id_path, 'w') as gpg_id_file:
                 gpg_id_file.write('\n'.join(gpg_ids))
@@ -177,9 +177,9 @@ class Store():
             git_add_path(self.repo, gpg_id_path, 'Set GPG id to {0}.'
                          .format(', '.join(gpg_ids)), verbose=self.verbose)
 
-        reencrypt_path(gpg_id_dir, gpg_bin=self.gpg_bin,
+        reencrypt_path(path, gpg_bin=self.gpg_bin,
                        gpg_opts=self.gpg_opts)
-        git_add_path(self.repo, gpg_id_dir,
+        git_add_path(self.repo, path,
                      'Reencrypt password store using new GPG id {0}.'
                      .format(', '.join(gpg_ids)), verbose=self.verbose)
 

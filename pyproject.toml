@@ -1,0 +1,42 @@
+[tool.poetry]
+name = "passpy"
+version = "1.0.2"
+description = "ZX2C4's pass compatible Python library and cli"
+authors = ["Benedikt Rascher-Friesenhausen <benedikt_rascher-friesenhausen+passpy@gmail.com>"]
+license = "GPL-3.0-or-later"
+documentation = "https://passpy.readthedocs.io/en/latest/index.html"
+repository = "https://github.com/bfrascher/passpy"
+readme = "README.md"
+include = ["NOTICE"]
+classifiers = [
+    'Development Status :: 5 - Production/Stable',
+    'Environment :: Console',
+    'Intended Audience :: End Users/Desktop',
+    'Intended Audience :: Developers',
+    'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+    'Operating System :: Microsoft :: Windows',
+    'Operating System :: POSIX :: Linux',
+    'Operating System :: MacOS',
+    'Topic :: Utilities' ,
+]
+
+[tool.poetry.dependencies]
+python = ">=3.3"
+
+click = ">=2.0"
+colorama = { version = ">=0.3", optional = true }
+GitPython = ">=1.0.1"
+pyperclip = ">=1.5"
+python-gnupg = ">=0.3.8"
+
+[tool.poetry.dev-dependencies]
+
+[tool.poetry.extras]
+color = ["colorama"]
+
+[tool.poetry.scripts]
+passpy = 'passpy.__main__:cli'
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"

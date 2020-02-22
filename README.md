@@ -64,6 +64,14 @@ you will additionally need to install
 
 ## Changelog
 
+### 1.0.2
+
+- Now also read the default password store location from `PASSWORD_STORE_DIR`
+  for the cli.
+- Show a better error message when the password store does not exist.
+- Always use the `path` parameter of `Store.init_store` relative to
+  `Store.store_dir`.
+
 ### 1.0.1
 
 - Fix documentation.

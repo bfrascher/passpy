@@ -234,6 +234,9 @@ def ls(ctx, subfolder, passthrough=False):
     # TODO(benedikt) Generate pretty output
     try:
         keys = list(ctx.obj.iter_dir(subfolder))
+    except StoreNotInitialisedError:
+        click.echo(MSG_STORE_NOT_INITIALISED_ERROR)
+        return 1
     # If subfolder is actually a key in the password store pass shows
     # the contents of that key.
     except FileNotFoundError:
@@ -243,9 +246,6 @@ def ls(ctx, subfolder, passthrough=False):
         else:
             click.echo(MSG_FILE_NOT_FOUND.format(subfolder))
             return 1
-    except StoreNotInitialisedError:
-        click.echo(MSG_STORE_NOT_INITIALISED_ERROR)
-        return 1
 
     click.echo('Password Store')
     tree = _gen_tree(keys)
@@ -315,6 +315,9 @@ def show(ctx, pass_name, clip, passthrough=False):
     """
     try:
         data = ctx.obj.get_key(pass_name)
+    except StoreNotInitialisedError:
+        click.echo(MSG_STORE_NOT_INITIALISED_ERROR)
+        return 1
     # If pass_name is actually a folder in the password store pass
     # lists the folder instead.
     except FileNotFoundError:
@@ -323,9 +326,6 @@ def show(ctx, pass_name, clip, passthrough=False):
         else:
             click.echo(MSG_FILE_NOT_FOUND.format(pass_name))
             return 1
-    except StoreNotInitialisedError:
-        click.echo(MSG_STORE_NOT_INITIALISED_ERROR)
-        return 1
     except PermissionError:
         click.echo(MSG_PERMISSION_ERROR)
         return 1
@@ -401,11 +401,11 @@ def edit(ctx, pass_name):
     """
     try:
         data = ctx.obj.get_key(pass_name)
-    except FileNotFoundError:
-        data = ''
     except StoreNotInitialisedError:
         click.echo(MSG_STORE_NOT_INITIALISED_ERROR)
         return 1
+    except FileNotFoundError:
+        data = ''
     except PermissionError:
         click.echo(MSG_PERMISSION_ERROR)
         return 1

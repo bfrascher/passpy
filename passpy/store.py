@@ -45,6 +45,7 @@ class Store():
     """
     def __init__(self, gpg_bin='gpg2', git_bin='git',
                  store_dir=os.getenv('PASSWORD_STORE_DIR', '~/.password-store'),
+                 gpg_dir=os.getenv('GNUPGHOME', '~/.gnupg'),
                  use_agent=True, interactive=False, verbose=False):
         """Creates a new Store object.
 
@@ -61,6 +62,10 @@ class Store():
             use the value of the PASSWORD_STORE_DIR environment variable by
             default, or `~/.password-store`, if not set.
 
+        :param str gpg_dir: (optional) The path to the gnupg store.  Will
+            use the value of the GNUPGHOME environment variable by
+            default, or `~/.gnupg`, if not set.
+
         :param bool use_agent: (optional) Set to ``True`` if you are
             using a gpg agent.
 
@@ -75,7 +80,7 @@ class Store():
         self.git_bin = git_bin
 
         self.gpg_opts = ['--quiet', '--yes', '--compress-algo=none',
-                         '--no-encrypt-to']
+                         '--no-encrypt-to', '--homedir', gpg_dir]
         if use_agent:
             self.gpg_opts += ['--batch', '--use-agent']
 
